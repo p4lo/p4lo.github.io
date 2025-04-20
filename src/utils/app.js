@@ -3,78 +3,83 @@ document.addEventListener('DOMContentLoaded', () => {
   // Create stats panel element
   createStatsPanel();
   
-  // Initialize map with modern styling
+  // Initialize map with modern styling - simplified for mobile
   const map = L.map('map', {
-    zoomControl: false // We'll add zoom control manually for better styling
+    zoomControl: true, // Use default zoom controls for better mobile touch support
+    minZoom: 10,  // Don't let users zoom out too far
+    maxZoom: 18,  // Limit maximum zoom to maintain performance
+    maxBoundsViscosity: 1.0  // Keep map within NYC area bounds
   }).setView([40.7500, -73.9700], 11);
   
-  // Add tile layer with custom styling
+  // Save map instance to DOM for external script access
+  document.querySelector('#map').__leaflet_instance__ = map;
+  
+  // Add tile layer with high contrast styling for better mobile visibility
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     subdomains: 'abcd',
-    maxZoom: 19
+    maxZoom: 19,
+    detectRetina: true  // Support high-DPI displays like iPhone
   }).addTo(map);
   
-  // Add custom styled zoom control
-  L.control.zoom({
-    position: 'bottomright'
-  }).addTo(map);
-  
-  // Custom marker icon
+  // Custom marker icon - increased touch target size for mobile
   const customIcon = L.divIcon({
     className: 'custom-map-marker',
     html: '<div class="marker-inner"></div>',
-    iconSize: [14, 14],
-    iconAnchor: [7, 7]
+    iconSize: [24, 24],
+    iconAnchor: [12, 12]
   });
 
   // Markers group
   const markers = L.layerGroup().addTo(map);
   
-  // Create stats panel
+  // Create stats panel - desktop only
   function createStatsPanel() {
-    const statsPanel = document.createElement('div');
-    statsPanel.className = 'stats-panel';
-    statsPanel.innerHTML = `
-      <div class="stats-panel-header">
-        <h3>Happy Hour Details</h3>
-        <div class="stats-panel-toggle">
-          <svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
-            <path d="M6 8L1 3h10l-5 5z" fill="#1d1d1f" />
-          </svg>
+    // Only create the stats panel on desktop devices
+    if (window.innerWidth >= 768) {
+      const statsPanel = document.createElement('div');
+      statsPanel.className = 'stats-panel';
+      statsPanel.innerHTML = `
+        <div class="stats-panel-header">
+          <h3>Happy Hour Details</h3>
+          <div class="stats-panel-toggle">
+            <svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 8L1 3h10l-5 5z" fill="#1d1d1f" />
+            </svg>
+          </div>
         </div>
-      </div>
-      <div class="stats-panel-content">
-        <div class="stats-item">
-          <div class="stats-item-label">Selected Neighborhood</div>
-          <div class="stats-item-value" id="stats-neighborhood">All Neighborhoods</div>
+        <div class="stats-panel-content">
+          <div class="stats-item">
+            <div class="stats-item-label">Selected Neighborhood</div>
+            <div class="stats-item-value" id="stats-neighborhood">All Neighborhoods</div>
+          </div>
+          <div class="stats-item">
+            <div class="stats-item-label">Active Day</div>
+            <div class="stats-item-value" id="stats-day">All Days</div>
+          </div>
+          <div class="stats-item">
+            <div class="stats-item-label">Happy Hours Available</div>
+            <div class="stats-item-value" id="stats-count">0</div>
+          </div>
+          <div class="stats-item">
+            <div class="stats-item-label">Average Price Range</div>
+            <div class="stats-item-value" id="stats-price">$ - $$</div>
+          </div>
         </div>
-        <div class="stats-item">
-          <div class="stats-item-label">Active Day</div>
-          <div class="stats-item-value" id="stats-day">All Days</div>
-        </div>
-        <div class="stats-item">
-          <div class="stats-item-label">Happy Hours Available</div>
-          <div class="stats-item-value" id="stats-count">0</div>
-        </div>
-        <div class="stats-item">
-          <div class="stats-item-label">Average Price Range</div>
-          <div class="stats-item-value" id="stats-price">$ - $$</div>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(statsPanel);
-    
-    // Make panel collapsible
-    const header = statsPanel.querySelector('.stats-panel-header');
-    header.addEventListener('click', () => {
-      statsPanel.classList.toggle('collapsed');
-    });
-    
-    // Show panel when in map view
-    setTimeout(() => {
-      statsPanel.classList.add('active');
-    }, 1000);
+      `;
+      document.body.appendChild(statsPanel);
+      
+      // Make panel collapsible
+      const header = statsPanel.querySelector('.stats-panel-header');
+      header.addEventListener('click', () => {
+        statsPanel.classList.toggle('collapsed');
+      });
+      
+      // Show panel when in map view (for desktop only)
+      setTimeout(() => {
+        statsPanel.classList.add('active');
+      }, 1000);
+    }
   }
   
   // Navigation event listeners
@@ -333,11 +338,11 @@ document.addEventListener('DOMContentLoaded', () => {
       background: transparent;
     }
     .marker-inner {
-      width: 12px;
-      height: 12px;
+      width: 18px; /* Larger for mobile touch */
+      height: 18px;
       background: #0071e3;
       border-radius: 50%;
-      box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.3);
+      box-shadow: 0 0 0 5px rgba(0, 113, 227, 0.3);
       transition: transform 0.2s, box-shadow 0.2s;
     }
     .leaflet-marker-icon:hover .marker-inner {
@@ -404,8 +409,5 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   document.head.appendChild(style);
   
-  // Disable page zoom on double tap for mobile devices (iOS Safari)
-  document.addEventListener('gesturestart', function(e) {
-    e.preventDefault();
-  });
+  // Allow normal map zooming without interference
 });

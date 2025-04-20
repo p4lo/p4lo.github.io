@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>NYC Happy Hour Finder</title>
@@ -106,7 +106,7 @@
   <script src="src/utils/app.js"></script>
   
   <script>
-    // Mobile menu toggle
+    // Mobile menu toggle - simplified
     document.querySelector('.menu-toggle')?.addEventListener('click', function() {
       document.body.classList.toggle('menu-open');
     });
@@ -120,18 +120,29 @@
       });
     });
     
-    // Add subtle parallax effect to map on desktop only
-    if (document.querySelector('#map') && window.matchMedia('(min-width: 769px)').matches) {
-      window.addEventListener('scroll', function() {
-        const scrolled = window.scrollY;
-        if (document.querySelector('#map-view.active')) {
-          const map = document.querySelector('#map');
-          map.style.transform = `translateY(${scrolled * 0.1}px)`;
-        }
-      });
-    }
+    // Fix mobile map rendering
+    window.addEventListener('resize', function() {
+      if (document.querySelector('#map-view.active')) {
+        setTimeout(function() {
+          const mapInstance = document.querySelector('#map').__leaflet_instance__;
+          if (mapInstance) {
+            mapInstance.invalidateSize();
+          }
+        }, 200);
+      }
+    });
     
-    // Show install prompt for iOS users
+    // Fix map on orientation change for mobile
+    window.addEventListener('orientationchange', function() {
+      setTimeout(function() {
+        const mapInstance = document.querySelector('#map').__leaflet_instance__;
+        if (mapInstance) {
+          mapInstance.invalidateSize();
+        }
+      }, 200);
+    });
+    
+    // Show install prompt for iOS users (keeping this feature)
     const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
     

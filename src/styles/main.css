@@ -572,18 +572,20 @@ main {
     padding: 1.5rem;
   }
   
-  /* Adjust stats panel on mobile */
+  /* Hide stats panel on mobile devices - too much clutter */
   .stats-panel {
-    left: 15px;
-    right: 15px;
-    max-width: none;
-    width: auto;
-    bottom: 15px;
+    display: none;
   }
   
   /* Adjust map controls for touch */
   .leaflet-touch .leaflet-control-zoom {
-    margin-bottom: 70px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+  }
+  
+  /* Ensure map takes full height */
+  #map {
+    height: calc(100vh - 70px) !important;
   }
 }
 
