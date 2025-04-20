@@ -6,25 +6,19 @@
   <title>NYC Happy Hour Finder</title>
   <link rel="stylesheet" href="src/styles/main.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <meta name="theme-color" content="#ffffff">
+  <!-- Preload fonts for faster rendering -->
+  <link rel="preload" as="font" href="-apple-system" type="font/woff2" crossorigin>
 </head>
 <body>
   <header>
     <h1>NYC Happy Hour Finder</h1>
+    
     <nav>
-      <ul>
-        <li><a href="#" class="active" data-view="map">Map View</a></li>
-        <li><a href="#" data-view="list">List View</a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <main>
-    <aside>
-      <div class="filter-container">
-        <h2>Filter By</h2>
+      <div class="filters-container">
         <div class="filter">
-          <label for="neighborhood">Neighborhood</label>
-          <select id="neighborhood">
+          <select id="neighborhood" aria-label="Filter by neighborhood">
             <option value="all">All Neighborhoods</option>
             <!-- Manhattan -->
             <optgroup label="Manhattan">
@@ -59,9 +53,9 @@
             </optgroup>
           </select>
         </div>
+        
         <div class="filter">
-          <label for="day">Day</label>
-          <select id="day">
+          <select id="day" aria-label="Filter by day">
             <option value="all">All Days</option>
             <option value="monday">Monday</option>
             <option value="tuesday">Tuesday</option>
@@ -73,8 +67,21 @@
           </select>
         </div>
       </div>
-    </aside>
+      
+      <ul>
+        <li><a href="#" class="active" data-view="map">Map</a></li>
+        <li><a href="#" data-view="list">List</a></li>
+      </ul>
+      
+      <div class="menu-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </nav>
+  </header>
 
+  <main>
     <section id="map-view" class="view-container active">
       <div id="map"></div>
     </section>
@@ -89,5 +96,32 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="src/utils/data.js"></script>
   <script src="src/utils/app.js"></script>
+  
+  <script>
+    // Mobile menu toggle
+    document.querySelector('.menu-toggle')?.addEventListener('click', function() {
+      document.body.classList.toggle('menu-open');
+    });
+    
+    // Close mobile menu when a selection is made
+    document.querySelectorAll('.filters-container select').forEach(function(select) {
+      select.addEventListener('change', function() {
+        if (window.innerWidth <= 768) {
+          document.body.classList.remove('menu-open');
+        }
+      });
+    });
+    
+    // Add subtle parallax effect to map
+    if (document.querySelector('#map')) {
+      window.addEventListener('scroll', function() {
+        const scrolled = window.scrollY;
+        if (document.querySelector('#map-view.active')) {
+          const map = document.querySelector('#map');
+          map.style.transform = `translateY(${scrolled * 0.1}px)`;
+        }
+      });
+    }
+  </script>
 </body>
 </html>
