@@ -15,21 +15,23 @@
 </head>
 <body>
   <header id="main-header" class="collapsed">
-    <h1>Buzz on a Budget</h1>
-    
-    <div class="menu-toggle" aria-label="Toggle filters menu">
-      <span></span>
-      <span></span>
-      <span></span>
+    <div class="nav-pill-container">
+      <h1>Buzz on a Budget</h1>
+      
+      <div class="menu-toggle" aria-label="Toggle filters menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      
+      <nav>
+        <ul class="nav-pill">
+          <li><a href="#" class="active" data-view="home">Home</a></li>
+          <li><a href="#" data-view="map">Map</a></li>
+          <li><a href="#" data-view="list">List</a></li>
+        </ul>
+      </nav>
     </div>
-    
-    <nav>
-      <ul class="nav-main">
-        <li><a href="#" class="active" data-view="home">Home</a></li>
-        <li><a href="#" data-view="map">Map</a></li>
-        <li><a href="#" data-view="list">List</a></li>
-      </ul>
-    </nav>
   </header>
 
   <!-- Floating filter bar that appears in map and list views -->
@@ -99,8 +101,21 @@
     <!-- Home view with carousel -->
     <section id="home-view" class="view-container active">
       <div class="hero-section">
-        <h2>Find Your Perfect <span class="highlight">Happy Hour</span></h2>
-        <p class="subtitle">Explore NYC's best drink deals, curated for every budget.</p>
+        <div class="hero-background">
+          <div class="hero-image-slider">
+            <div class="hero-image"></div>
+            <div class="hero-image"></div>
+            <div class="hero-image"></div>
+            <div class="hero-image"></div>
+            <div class="hero-image"></div>
+          </div>
+          <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+          <h2>Find Your Perfect <span class="highlight">Happy Hour</span></h2>
+          <p class="subtitle">Explore NYC's best drink deals, curated for every budget.</p>
+          <button class="explore-button" data-view="map">Explore Map</button>
+        </div>
       </div>
       
       <div class="carousel-container">
@@ -126,24 +141,26 @@
       </div>
       
       <div class="category-section">
-        <h3 class="section-title">Browse by Category</h3>
-        <div class="category-grid">
-          <a href="#" class="category-card" data-category="after-work">
-            <div class="category-icon">🏢</div>
-            <h4>After Work</h4>
-          </a>
-          <a href="#" class="category-card" data-category="weekend">
-            <div class="category-icon">🥂</div>
-            <h4>Weekend</h4>
-          </a>
-          <a href="#" class="category-card" data-category="late-night">
-            <div class="category-icon">🌙</div>
-            <h4>Late Night</h4>
-          </a>
-          <a href="#" class="category-card" data-category="rooftops">
-            <div class="category-icon">🏙️</div>
-            <h4>Rooftops</h4>
-          </a>
+        <div class="container">
+          <h3 class="section-title">Browse by Category</h3>
+          <div class="category-grid">
+            <a href="#" class="category-card" data-category="after-work">
+              <div class="category-icon">🏢</div>
+              <h4>After Work</h4>
+            </a>
+            <a href="#" class="category-card" data-category="weekend">
+              <div class="category-icon">🥂</div>
+              <h4>Weekend</h4>
+            </a>
+            <a href="#" class="category-card" data-category="late-night">
+              <div class="category-icon">🌙</div>
+              <h4>Late Night</h4>
+            </a>
+            <a href="#" class="category-card" data-category="rooftops">
+              <div class="category-icon">🏙️</div>
+              <h4>Rooftops</h4>
+            </a>
+          </div>
         </div>
       </div>
       

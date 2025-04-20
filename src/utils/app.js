@@ -52,10 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Save map instance to DOM for external script access
       document.querySelector('#map').__leaflet_instance__ = map;
       
-      // Add tile layer with high contrast styling for better mobile visibility
-      // Restore the original light-styled map tiles
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      // Add dark-themed map tiles to match the site's dark theme
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
         maxZoom: 19,
         detectRetina: true  // Support high-DPI displays like iPhone
@@ -92,13 +91,13 @@ document.addEventListener('DOMContentLoaded', () => {
     map = initMap();
   }
   
-  // Custom Apple-style marker icon with refined touch target for mobile
+  // Custom marker icon styled for dark theme maps
   const customIcon = L.divIcon({
     className: 'custom-map-marker',
-    html: '<div class="marker-inner"></div>',
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
-    popupAnchor: [0, -10] // Position popup slightly above marker
+    html: '<div class="marker-inner"><div class="marker-pulse"></div></div>',
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+    popupAnchor: [0, -12] // Position popup slightly above marker
   });
 
   // Markers group is now defined at the top as a global
@@ -269,11 +268,15 @@ document.addEventListener('DOMContentLoaded', () => {
               <img src="${getImageUrl(deal.imagePath)}" alt="${deal.name}" class="popup-image">
             </div>` : ''}
             <h3>${deal.name}</h3>
-            <p>${deal.address}</p>
-            <p><strong>${deal.hours}</strong></p>
-            <p>${deal.deals}</p>
-            ${deal.website ? `<a href="${deal.website}" target="_blank" class="website-link">Visit Website</a>` : ''}
-            <a href="#" class="popup-link" data-id="${deal.id}">View Details</a>
+            <div class="popup-info">
+              <p>${deal.address}</p>
+              <p><strong>${deal.hours}</strong></p>
+              <p>${deal.deals}</p>
+              <div class="popup-actions">
+                ${deal.website ? `<a href="${deal.website}" target="_blank" class="website-link">Visit Website</a>` : ''}
+                <a href="#" class="popup-link" data-id="${deal.id}">View Details</a>
+              </div>
+            </div>
           </div>
         `, {
           maxWidth: 300,
@@ -475,21 +478,46 @@ document.addEventListener('DOMContentLoaded', () => {
       contain: layout paint style;
     }
     .marker-inner {
-      width: 14px; /* Smaller, more subtle size */
-      height: 14px;
-      background: #0071e3;
+      width: 12px;
+      height: 12px;
+      background: var(--primary-color);
       border-radius: 50%;
-      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
-      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+      box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.3), 0 0 10px rgba(10, 132, 255, 0.5);
+      transition: all 0.2s ease-out;
       will-change: transform, box-shadow;
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      z-index: 1;
+    }
+    .marker-pulse {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(10, 132, 255, 0.2);
+      border: 1px solid rgba(10, 132, 255, 0.3);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: markerPulse 1.5s infinite ease-out;
+      z-index: 0;
+    }
+    @keyframes markerPulse {
+      0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+      }
     }
     .leaflet-marker-icon:hover .marker-inner {
-      transform: translate(-50%, -50%) scale(1.1);
-      box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
+      transform: translate(-50%, -50%) scale(1.2);
+      box-shadow: 0 0 0 5px rgba(10, 132, 255, 0.4), 0 0 15px rgba(10, 132, 255, 0.6);
+      background: #ffffff;
     }
     .filters-changed .deals-container {
       opacity: 0.8;
@@ -615,8 +643,34 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.add('home-active');
     }
     
+    // Set random background image for category section
+    setRandomCategoryBackground();
+    
     // Set up category and neighborhood clicks
     setupHomepageInteractions();
+  }
+  
+  // Function to set a random background image for the category section
+  function setRandomCategoryBackground() {
+    try {
+      // Get all deals with images
+      const dealsWithImages = happyHourDeals.filter(deal => deal.imagePath);
+      
+      // If we have deals with images, pick a random one
+      if (dealsWithImages.length > 0) {
+        const randomIndex = Math.floor(Math.random() * dealsWithImages.length);
+        const randomDeal = dealsWithImages[randomIndex];
+        
+        // Set the background image on the category section
+        const categorySection = document.querySelector('.category-section');
+        if (categorySection) {
+          categorySection.style.backgroundImage = `url('${randomDeal.imagePath}')`;
+          console.log('Set random category background:', randomDeal.imagePath);
+        }
+      }
+    } catch (error) {
+      console.error('Error setting random category background:', error);
+    }
   }
   
   // Get featured deals - selecting some attractive ones with images
