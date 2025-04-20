@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>NYC Happy Hour Finder</title>
   <link rel="stylesheet" href="src/styles/main.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -10,6 +12,7 @@
   <meta name="theme-color" content="#ffffff">
   <!-- Preload fonts for faster rendering -->
   <link rel="preload" as="font" href="-apple-system" type="font/woff2" crossorigin>
+  <meta name="description" content="Find the best happy hour deals across New York City with our interactive map and filtering options.">
 </head>
 <body>
   <header>
@@ -73,7 +76,7 @@
         <li><a href="#" data-view="list">List</a></li>
       </ul>
       
-      <div class="menu-toggle">
+      <div class="menu-toggle" aria-label="Toggle filters menu">
         <span></span>
         <span></span>
         <span></span>
@@ -84,6 +87,11 @@
   <main>
     <section id="map-view" class="view-container active">
       <div id="map"></div>
+      <!-- Install button for iOS home screen -->
+      <div id="install-prompt" class="install-prompt">
+        <p>Add to Home Screen for the best experience</p>
+        <button id="close-prompt" aria-label="Close install prompt">×</button>
+      </div>
     </section>
 
     <section id="list-view" class="view-container">
@@ -112,8 +120,8 @@
       });
     });
     
-    // Add subtle parallax effect to map
-    if (document.querySelector('#map')) {
+    // Add subtle parallax effect to map on desktop only
+    if (document.querySelector('#map') && window.matchMedia('(min-width: 769px)').matches) {
       window.addEventListener('scroll', function() {
         const scrolled = window.scrollY;
         if (document.querySelector('#map-view.active')) {
@@ -121,6 +129,31 @@
           map.style.transform = `translateY(${scrolled * 0.1}px)`;
         }
       });
+    }
+    
+    // Show install prompt for iOS users
+    const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+    
+    if (isIOS() && !isInStandaloneMode()) {
+      const installPrompt = document.getElementById('install-prompt');
+      const closePrompt = document.getElementById('close-prompt');
+      
+      // Show prompt after a delay
+      setTimeout(function() {
+        installPrompt.classList.add('active');
+      }, 2000);
+      
+      // Allow dismissing the prompt
+      closePrompt.addEventListener('click', function() {
+        installPrompt.classList.remove('active');
+        localStorage.setItem('installPromptDismissed', 'true');
+      });
+      
+      // Don't show again if dismissed before
+      if (localStorage.getItem('installPromptDismissed') === 'true') {
+        installPrompt.classList.remove('active');
+      }
     }
   </script>
 </body>

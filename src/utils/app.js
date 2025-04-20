@@ -326,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   
-  // Add CSS for custom marker
+  // Add CSS for custom marker and mobile optimizations
   const style = document.createElement('style');
   style.innerHTML = `
     .custom-map-marker {
@@ -357,6 +357,55 @@ document.addEventListener('DOMContentLoaded', () => {
       opacity: 1;
       transform: translateY(0);
     }
+    
+    /* iOS Specific Enhancements */
+    @supports (-webkit-touch-callout: none) {
+      /* Smoother scrolling on iOS */
+      body {
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      /* Fix for iOS tap highlight color */
+      a, button, select, .deal-card, .stats-panel-header {
+        -webkit-tap-highlight-color: transparent;
+      }
+      
+      /* Make dropdowns work better on iOS */
+      select {
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='6'><path d='M0 0h12L6 6z' fill='%231d1d1f'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        padding-right: 24px !important;
+      }
+      
+      /* Better touch scrolling for panels */
+      .stats-panel-content {
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+    
+    /* Remove hover effects on touch devices */
+    @media (hover: none) {
+      .deal-website a:hover, .popup-link:hover, .website-link:hover {
+        background-color: rgba(0, 113, 227, 0.1);
+        color: #0071e3;
+      }
+      
+      .leaflet-marker-icon:hover .marker-inner {
+        transform: none;
+        box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.3);
+      }
+      
+      .deal-card:hover {
+        transform: none;
+        box-shadow: none;
+      }
+    }
   `;
   document.head.appendChild(style);
+  
+  // Disable page zoom on double tap for mobile devices (iOS Safari)
+  document.addEventListener('gesturestart', function(e) {
+    e.preventDefault();
+  });
 });

@@ -138,6 +138,8 @@ main {
   z-index: 100;
   opacity: 0;
   pointer-events: none;
+  user-select: none;
+  touch-action: pan-x pan-y;
 }
 
 .stats-panel.active {
@@ -202,6 +204,63 @@ main {
   font-size: 1rem;
   color: #1d1d1f;
   font-weight: 500;
+}
+
+/* Install prompt for iOS */
+.install-prompt {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 0.75rem 1.25rem 0.75rem 1rem;
+  border-radius: 30px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+  max-width: 90%;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.install-prompt.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.install-prompt p {
+  margin: 0;
+  padding: 0.5rem 0.5rem 0.5rem 0;
+  font-size: 0.9rem;
+  color: #1d1d1f;
+  font-weight: 500;
+}
+
+.install-prompt button {
+  border: none;
+  background: none;
+  color: #86868b;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-left: 0.5rem;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.install-prompt button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #1d1d1f;
 }
 
 .filter-container h2 {
@@ -457,10 +516,16 @@ main {
   
   .menu-toggle {
     display: flex;
+    margin-left: 1rem;
+    z-index: 101;
+  }
+  
+  nav {
+    justify-content: space-between;
   }
   
   nav ul {
-    margin-right: 1rem;
+    margin-right: 0;
   }
   
   nav ul li {
@@ -506,6 +571,20 @@ main {
     grid-template-columns: 1fr;
     padding: 1.5rem;
   }
+  
+  /* Adjust stats panel on mobile */
+  .stats-panel {
+    left: 15px;
+    right: 15px;
+    max-width: none;
+    width: auto;
+    bottom: 15px;
+  }
+  
+  /* Adjust map controls for touch */
+  .leaflet-touch .leaflet-control-zoom {
+    margin-bottom: 70px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -514,11 +593,12 @@ main {
   }
   
   header h1 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
   
   nav ul li a {
     font-size: 0.85rem;
+    padding: 0.4rem 0;
   }
   
   #map {
@@ -527,6 +607,7 @@ main {
   
   .deal-card {
     padding: 1.25rem;
+    border-radius: 8px;
   }
   
   .filters-container {
@@ -536,5 +617,68 @@ main {
   .filter select {
     padding: 0.4rem 1rem;
     font-size: 0.8rem;
+  }
+  
+  /* Improve touch targets */
+  .deal-website a {
+    padding: 0.75rem 1.2rem;
+    display: block;
+    text-align: center;
+  }
+  
+  .popup-link, .website-link {
+    padding: 0.5rem 0.75rem;
+    margin-top: 1rem;
+  }
+  
+  /* Ensure stats panel is usable on small screens */
+  .stats-panel {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .stats-panel-content {
+    max-height: 250px;
+  }
+  
+  .stats-item-value {
+    font-size: 0.95rem;
+  }
+}
+
+/* iPhone SE and other very small screens */
+@media (max-width: 375px) {
+  header h1 {
+    font-size: 1rem;
+  }
+  
+  nav ul li a {
+    font-size: 0.8rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  .deal-name {
+    font-size: 1.1rem;
+  }
+  
+  .deal-location {
+    font-size: 0.9rem;
+  }
+  
+  .deal-address, .deal-time, .deal-description, .deal-deals {
+    font-size: 0.85rem;
+  }
+  
+  .stats-panel {
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+  }
+  
+  /* Fix menu toggle on very small screens */
+  .menu-toggle {
+    width: 20px;
+    height: 15px;
   }
 }
