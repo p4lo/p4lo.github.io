@@ -87,10 +87,16 @@
   <main>
     <section id="map-view" class="view-container active">
       <div id="map"></div>
+      <!-- Marker count display for debugging -->
+      <div id="marker-count" class="marker-count"></div>
       <!-- Install button for iOS home screen -->
       <div id="install-prompt" class="install-prompt">
         <p>Add to Home Screen for the best experience</p>
         <button id="close-prompt" aria-label="Close install prompt">×</button>
+      </div>
+      <!-- Debug controls -->
+      <div class="debug-controls">
+        <button id="refresh-map" aria-label="Refresh map">Refresh Map</button>
       </div>
     </section>
 
@@ -120,6 +126,54 @@
       });
     });
     
+    // Show marker count for debugging
+    function updateMarkerCount() {
+      const markerContainer = document.getElementById('marker-count');
+      if (markerContainer) {
+        try {
+          const map = document.querySelector('#map').__leaflet_instance__;
+          if (map) {
+            const allLayers = map._layers;
+            let markerCount = 0;
+            
+            // Count all marker layers
+            for (const layerId in allLayers) {
+              if (allLayers[layerId] instanceof L.Marker) {
+                markerCount++;
+              }
+            }
+            
+            markerContainer.textContent = `${markerCount} markers`;
+            markerContainer.style.display = markerCount > 0 ? 'block' : 'none';
+          }
+        } catch (e) {
+          console.error('Error counting markers:', e);
+          markerContainer.textContent = 'Error counting markers';
+        }
+      }
+    }
+    
+    // Refresh map button
+    document.getElementById('refresh-map')?.addEventListener('click', function() {
+      try {
+        const map = document.querySelector('#map').__leaflet_instance__;
+        if (map) {
+          // Force reload by calling renderDeals again
+          const event = new Event('change');
+          document.getElementById('neighborhood').dispatchEvent(event);
+          
+          // Also force invalidate size
+          setTimeout(() => {
+            map.invalidateSize();
+            updateMarkerCount();
+          }, 100);
+        }
+      } catch (e) {
+        console.error('Error refreshing map:', e);
+        alert('Could not refresh map. Try reloading the page.');
+      }
+    });
+    
     // Fix mobile map rendering
     window.addEventListener('resize', function() {
       if (document.querySelector('#map-view.active')) {
@@ -127,6 +181,7 @@
           const mapInstance = document.querySelector('#map').__leaflet_instance__;
           if (mapInstance) {
             mapInstance.invalidateSize();
+            updateMarkerCount();
           }
         }, 200);
       }
@@ -138,9 +193,13 @@
         const mapInstance = document.querySelector('#map').__leaflet_instance__;
         if (mapInstance) {
           mapInstance.invalidateSize();
+          updateMarkerCount();
         }
-      }, 200);
+      }, 300);  // Longer timeout for orientation changes
     });
+    
+    // Monitor marker status 
+    setInterval(updateMarkerCount, 2000); // Update marker count every 2 seconds
     
     // Show install prompt for iOS users (keeping this feature)
     const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;

@@ -22,12 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
     detectRetina: true  // Support high-DPI displays like iPhone
   }).addTo(map);
   
-  // Custom marker icon - increased touch target size for mobile
-  const customIcon = L.divIcon({
-    className: 'custom-map-marker',
-    html: '<div class="marker-inner"></div>',
-    iconSize: [24, 24],
-    iconAnchor: [12, 12]
+  // Fallback to standard Leaflet markers for better compatibility
+  const customIcon = new L.Icon({
+    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
   });
 
   // Markers group
@@ -189,31 +191,77 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('stats-price').textContent = priceLevel;
   }
   
-  // Function to render map markers
+  // Function to render map markers with better mobile compatibility
   function renderMapMarkers(deals) {
     // Clear existing markers
     markers.clearLayers();
     
+    // Debug marker count to console
+    console.log(`Rendering ${deals.length} markers on map`);
+    
+    // Create a backup standard marker for devices with SVG issues
+    const defaultIcon = new L.Icon.Default();
+    
     deals.forEach(deal => {
-      const marker = L.marker(deal.location, { icon: customIcon })
-        .bindPopup(`
-          <div class="popup-content">
-            <h3>${deal.name}</h3>
-            <p>${deal.address}</p>
-            <p><strong>${deal.hours}</strong></p>
-            <p>${deal.deals}</p>
-            ${deal.website ? `<a href="${deal.website}" target="_blank" class="website-link">Visit Website</a>` : ''}
-            <a href="#" class="popup-link" data-id="${deal.id}">View Details</a>
-          </div>
-        `);
-      
-      markers.addLayer(marker);
+      try {
+        // Try to add with custom icon first
+        const marker = L.marker(deal.location, { icon: customIcon })
+          .bindPopup(`
+            <div class="popup-content">
+              <h3>${deal.name}</h3>
+              <p>${deal.address}</p>
+              <p><strong>${deal.hours}</strong></p>
+              <p>${deal.deals}</p>
+              ${deal.website ? `<a href="${deal.website}" target="_blank" class="website-link">Visit Website</a>` : ''}
+              <a href="#" class="popup-link" data-id="${deal.id}">View Details</a>
+            </div>
+          `);
+        
+        markers.addLayer(marker);
+        
+        // Create a visible indicator for debugging
+        if (window.location.search.includes('debug=true')) {
+          L.circle(deal.location, {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: 100
+          }).addTo(map);
+        }
+      } catch (err) {
+        console.error('Error creating marker:', err);
+        
+        // Fallback to standard marker if custom one fails
+        try {
+          const fallbackMarker = L.marker(deal.location, { icon: defaultIcon })
+            .bindPopup(`
+              <div class="popup-content">
+                <h3>${deal.name}</h3>
+                <p>${deal.address}</p>
+                <p><strong>${deal.hours}</strong></p>
+                <p>${deal.deals}</p>
+                ${deal.website ? `<a href="${deal.website}" target="_blank" class="website-link">Visit Website</a>` : ''}
+                <a href="#" class="popup-link" data-id="${deal.id}">View Details</a>
+              </div>
+            `);
+          
+          markers.addLayer(fallbackMarker);
+        } catch (fallbackErr) {
+          console.error('Fallback marker also failed:', fallbackErr);
+        }
+      }
     });
     
     // If we have deals, fit bounds to see all markers
     if (deals.length > 0) {
-      const bounds = L.featureGroup(markers.getLayers()).getBounds();
-      map.fitBounds(bounds, { padding: [50, 50] });
+      try {
+        const bounds = L.featureGroup(markers.getLayers()).getBounds();
+        map.fitBounds(bounds, { padding: [50, 50] });
+      } catch (e) {
+        console.error('Error fitting bounds:', e);
+        // Fallback to default view
+        map.setView([40.7500, -73.9700], 11);
+      }
     }
   }
   

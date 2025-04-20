@@ -206,6 +206,38 @@ main {
   font-weight: 500;
 }
 
+/* Debugging elements */
+.marker-count {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  z-index: 1000;
+}
+
+.debug-controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+}
+
+.debug-controls button {
+  background-color: #0071e3;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
 /* Install prompt for iOS */
 .install-prompt {
   position: fixed;
