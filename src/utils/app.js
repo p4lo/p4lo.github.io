@@ -243,6 +243,9 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     
+    // Log for debugging
+    console.log(`Rendering ${deals.length} deals in list view`);
+    
     // Create fragment for better performance
     const fragment = document.createDocumentFragment();
     
@@ -254,10 +257,10 @@ document.addEventListener('DOMContentLoaded', () => {
       dealCard.innerHTML = `
         <div class="deal-info">
           <h3 class="deal-name">${deal.name}</h3>
-          <p class="deal-location">${deal.subNeighborhood}</p>
+          <p class="deal-location">${deal.subNeighborhood || deal.neighborhood}</p>
           <p class="deal-address">${deal.address}</p>
           <p class="deal-time">${deal.hours} • ${formatDays(deal.days)}</p>
-          <p class="deal-description">${deal.description}</p>
+          <p class="deal-description">${deal.description || ''}</p>
           <p class="deal-deals"><strong>Deals:</strong> ${deal.deals}</p>
           ${deal.website ? `<p class="deal-website"><a href="${deal.website}" target="_blank">Visit Website</a></p>` : ''}
         </div>
@@ -268,12 +271,21 @@ document.addEventListener('DOMContentLoaded', () => {
     
     dealsContainer.appendChild(fragment);
     
-    // Add animation class after a small delay
-    setTimeout(() => {
-      document.querySelectorAll('.deal-card').forEach(card => {
-        card.classList.add('fade-in');
-      });
-    }, 10);
+    // Force reflow to ensure cards are added to DOM before animation
+    window.getComputedStyle(dealsContainer).opacity;
+    
+    // Add animation class immediately after reflow
+    document.querySelectorAll('.deal-card').forEach(card => {
+      card.classList.add('fade-in');
+    });
+    
+    // Fix for mobile: ensure the container has proper height
+    if (window.innerWidth <= 768) {
+      // Reset map-active class when in list view
+      if (document.querySelector('#list-view.active')) {
+        document.body.classList.remove('map-active');
+      }
+    }
   }
   
   // Helper function to format days

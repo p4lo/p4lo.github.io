@@ -252,37 +252,7 @@ body:not(.map-active) #desktop-stats-panel {
   font-weight: 500;
 }
 
-/* Debugging elements */
-.marker-count {
-  position: fixed;
-  top: 80px;
-  right: 20px;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  z-index: 1000;
-}
-
-.debug-controls {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 999;
-}
-
-.debug-controls button {
-  background-color: #0071e3;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: bold;
-  font-size: 14px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
+/* Debugging elements removed */
 
 /* Install prompt for iOS */
 .install-prompt {
@@ -361,6 +331,7 @@ body:not(.map-active) #desktop-stats-panel {
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 1.5rem;
   padding: 2rem;
+  min-height: 100%;
 }
 
 .deal-card {
@@ -608,6 +579,7 @@ body:not(.map-active) #desktop-stats-panel {
   
   main {
     flex-direction: column;
+    height: calc(100vh - 70px);
   }
   
   .filters-container {
@@ -632,8 +604,22 @@ body:not(.map-active) #desktop-stats-panel {
   
   .view-container {
     margin-left: 0;
-    height: 66vh; /* Top two-thirds of the screen */
+    height: 100%; /* Full remaining height */
     min-height: auto;
+  }
+  
+  /* Ensure map takes full height of view container */
+  #map {
+    height: 100% !important;
+  }
+  
+  /* When map view is active, constrain height for stats panel */
+  body.map-active .view-container {
+    height: 66vh; /* Top two-thirds of the screen */
+  }
+  
+  body.map-active #map {
+    height: 100% !important;
   }
   
   /* Mobile stats panel that takes bottom third of screen */
@@ -682,16 +668,14 @@ body:not(.map-active) #desktop-stats-panel {
     margin-right: 20px;
   }
   
-  /* Ensure map takes correct height */
-  #map {
-    height: 66vh !important;
-  }
-  
+  /* List view styling */
   .deals-container {
     grid-template-columns: 1fr;
     padding: 1.5rem;
-    height: 66vh;
+    height: auto;
+    min-height: calc(100vh - 70px);
     overflow-y: auto;
+    padding-bottom: 4rem;
   }
 }
 
