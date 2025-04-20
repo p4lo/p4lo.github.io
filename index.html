@@ -84,11 +84,7 @@
   <main>
     <section id="map-view" class="view-container active">
       <div id="map"></div>
-      <!-- Install button for iOS home screen -->
-      <div id="install-prompt" class="install-prompt">
-        <p>Add to Home Screen for the best experience</p>
-        <button id="close-prompt" aria-label="Close install prompt">×</button>
-      </div>
+      <!-- Install prompt removed -->
     </section>
 
     <section id="list-view" class="view-container">
@@ -192,30 +188,7 @@
     
     // We've removed the marker count debugging
     
-    // Show install prompt for iOS users (keeping this feature)
-    const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
-    
-    if (isIOS() && !isInStandaloneMode()) {
-      const installPrompt = document.getElementById('install-prompt');
-      const closePrompt = document.getElementById('close-prompt');
-      
-      // Show prompt after a delay
-      setTimeout(function() {
-        installPrompt.classList.add('active');
-      }, 2000);
-      
-      // Allow dismissing the prompt
-      closePrompt.addEventListener('click', function() {
-        installPrompt.classList.remove('active');
-        localStorage.setItem('installPromptDismissed', 'true');
-      });
-      
-      // Don't show again if dismissed before
-      if (localStorage.getItem('installPromptDismissed') === 'true') {
-        installPrompt.classList.remove('active');
-      }
-    }
+    // Install prompt feature removed
   </script>
 </body>
 </html>
