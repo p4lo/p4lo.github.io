@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manhattan Happy Hour Finder</title>
+  <title>NYC Happy Hour Finder</title>
   <link rel="stylesheet" href="src/styles/main.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
   <header>
-    <h1>Manhattan Happy Hour Finder</h1>
+    <h1>NYC Happy Hour Finder</h1>
     <nav>
       <ul>
         <li><a href="#" class="active" data-view="map">Map View</a></li>
@@ -26,12 +26,37 @@
           <label for="neighborhood">Neighborhood</label>
           <select id="neighborhood">
             <option value="all">All Neighborhoods</option>
-            <option value="east_village">East Village</option>
-            <option value="west_village">West Village</option>
-            <option value="lower_east_side">Lower East Side</option>
-            <option value="upper_east_side">Upper East Side</option>
-            <option value="midtown">Midtown</option>
-            <option value="chelsea">Chelsea</option>
+            <!-- Manhattan -->
+            <optgroup label="Manhattan">
+              <option value="west_village">West Village</option>
+              <option value="east_village">East Village</option>
+              <option value="lower_east_side">Lower East Side</option>
+              <option value="midtown">Midtown</option>
+              <option value="chelsea">Chelsea</option>
+              <option value="times_square">Times Square</option>
+              <option value="murray_hill">Murray Hill</option>
+              <option value="financial_district">Financial District</option>
+              <option value="upper_east_side">Upper East Side</option>
+              <option value="hells_kitchen">Hell's Kitchen</option>
+              <option value="nolita">Nolita</option>
+              <option value="union_square">Union Square</option>
+              <option value="nomad">NoMad</option>
+              <option value="gramercy">Gramercy</option>
+            </optgroup>
+            <!-- Brooklyn -->
+            <optgroup label="Brooklyn">
+              <option value="williamsburg">Williamsburg</option>
+              <option value="bushwick">Bushwick</option>
+              <option value="park_slope">Park Slope</option>
+              <option value="greenpoint">Greenpoint</option>
+            </optgroup>
+            <!-- Other Neighborhoods -->
+            <optgroup label="Other Areas">
+              <option value="soho">SoHo</option>
+              <option value="harlem">Harlem</option>
+              <option value="upper_west_side">Upper West Side</option>
+              <option value="kips_bay">Kips Bay</option>
+            </optgroup>
           </select>
         </div>
         <div class="filter">

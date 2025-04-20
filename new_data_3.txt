@@ -1,0 +1,81 @@
+submarket,place_name,address,website,description
+West Village,The Spaniard,190 West 4th Street, NY 10014,https://thespaniardnyc.com,Mon-Fri, 4 PM–6 PM: $9 Little Spaniard Single Smash Burger, $2 off all draft beers
+West Village,Hudson Hound,575 Hudson Street, NY 10014,https://hudsonhoundnyc.com,Tue-Fri, 4 PM–6 PM: $7 draught beer, $10 Aperol Spritz/Margarita/Sangria, 25% off wine, $20 bucket of 4 beers, 20% off bar food
+West Village,61 Grove Street,61 Grove Street, NY 10014,https://61grovestreet.com,Mon-Thu, 4 PM–7 PM: $6 Bitburger Pilsner/Magners Pear Cider/Montauk Watermelon, $10 house wines/Aperol Spritz/Margarita/Sangria, $14 mozzarella sticks, $10 sliders
+West Village,Dante,79-81 Macdougal Street, NY 10012,https://www.dante-nyc.com,Daily, 3 PM–5 PM: $10 martinis, $8 negronis, $1.50 oysters
+West Village,Bobo,181 W 10th St, NY 10014,https://www.bobonyc.com,Daily, 5 PM–7 PM: $2 oysters, $8 wines, $10 cocktails, $5 beer; Fri-Sat, 10 PM–12 AM: $14 martinis
+West Village,Down the Hatch,179 W 4th St, NY 10014,https://www.downthehatchnyc.com,Mon-Fri, Open–7 PM: 1/2 off entire bar, $5 Jell-O shots, $5 Michelob Ultra
+West Village,Boucherie West Village,99 7th Avenue South, NY 10014,https://www.boucherieus.com,Mon-Sun, 2 PM–7 PM: $9 Kronenbourg, $12 house wines, $14 cocktails, $17 half dozen oysters
+West Village,LELABAR,75 Washington Pl, NY 10011,https://www.lelabar.com,Daily until 6 PM: $12 wine/glass, $44/bottle, $6 beer, $3 oysters, $5 cheese/charcuterie
+West Village,Due West,189 W 10th St, NY 10014,https://www.duewestnyc.com,Mon-Thu, 5 PM–7 PM; Fri, 4 PM–6 PM: $10-11 draft cocktails, $7 wines, $5-6 beers, $1.50 oysters
+West Village,Bandits,44 Bedford St, NY 10014,https://www.banditsnyc.com,Mon-Fri, 4 PM–6 PM: $10 martini, $15 Martini Happy Meal (martini + tots)
+West Village,The Half Pint,76 W 3rd St, NY 10012,https://thehalfpint.com,Mon-Fri, 3 PM–7 PM: $5 Espresso Martini/Aperol Spritz/Frozen Irish Coffee/Frozen Boba Bellini, $8 well drinks, $8 wine, $6 beer
+West Village,Greenwich Treehouse,46 Greenwich Ave, NY 10011,https://www.greenwichtreehouse.com,Mon-Fri, 5 PM–8 PM; Sun, 3 PM–8 PM: $1 off beer/wine/well drinks, $5 Jell-O shot, $8 beer and shot
+East Village,The Wayland,700 E 9th St, NY 10009,https://www.thewaylandnyc.com,Mon-Fri, 4 PM–7 PM: $10 cocktails, $10 half dozen oysters, $18 dozen oysters, $12 beer & burger, $7 oyster shooters, $9 wine, $4-5 beer
+East Village,The Gray Mare,61 2nd Ave, NY 10003,https://www.thegraymarenyc.com,Mon-Fri, 4 PM–7 PM: $6 draft beers, $8 cocktails and wines
+East Village,Lovers of Today,132½ E 7th St, NY 10009,,Mon-Fri, 5 PM–7 PM: Discounted select cocktails and beers
+East Village,Keybar,432 E 13th St, NY 10009,http://www.keybar.com,Daily, 4 PM–10 PM: $4 bottles and shots, $5 drafts and well drinks, $6 wines, $7 margaritas
+East Village,A10 Kitchen,162 Avenue A, NY 10009,https://www.a10kitchen.com,Tue-Fri, 4 PM–7 PM; Sat, 1 PM–7 PM; Sun, 1 PM–8 PM: $13 burgers, $9 chicken wings, $21 margarita pitchers
+East Village,Upstate Craft Beer & Oyster Bar,95 1st Ave, NY 10003,http://www.upstatenyc.com,Daily, 5 PM–7 PM: $12 for 6 oysters and a beer
+East Village,Bibi Wine Bar,211 E 4th St, NY 10009,http://www.bibiwinebar.com,Daily until 8 PM: $8 glasses and $28 bottles of select wines
+East Village,Tile Bar (WCOU Radio),115 1st Ave, NY 10003,,Mon-Thu, 5 PM–8 PM; Fri, 4 PM–8 PM; Weekends, 3 PM–8 PM: $4 well drinks, $3 Bud and Bud Light drafts
+East Village,Yuca Bar & Restaurant,111 Avenue A, NY 10009,http://www.yucabarnyc.com,Daily until 8 PM: Half-priced drinks
+East Village,The Lions Bar & Grill,132 1st Ave, NY 10009,https://www.thelionsbar.com,Mon-Fri, 4 PM–6 PM: $14 martini, $18 martini & fries, $8 margarita, $5 select beer, $7 Guinness
+Midtown,The Friki Tiki,357 W 44th St, NY 10036,https://www.frikitiki.com,Tue-Sat, 5 PM–8 PM: $10 frozen drinks, $9 wine, $6 beer
+Midtown,Valerie,45 W 45th St, NY 10036,https://www.valerienyc.com,Mon-Fri, 4 PM–7 PM: $12 cocktails, $9 select wines, $7 select beers, $1 oysters
+Midtown,The Stag’s Head,252 E 51st St, NY 10022,https://www.stagheadsnyc.com,Mon-Fri, 11 AM–7 PM: $5 select beers, $6 well drinks, $7 select wines
+Midtown,Draught 55,245 E 55th St, NY 10022,https://www.draught55.com,Mon all day; Tue-Fri, open-7 PM: $9 select cocktails, $5 beer, $6 well drinks, $2 off wine
+Midtown,The Rum House,228 W 47th St, NY 10036,https://www.therumhousenyc.com,Mon-Fri, 12 PM–5 PM: $10 classic cocktails, $8 select wines, $6 beers
+Midtown,The Horny Ram,951 2nd Ave, NY 10022,https://www.thehornyram.com,Mon-Fri, 4 PM–7 PM: $8 Aperol spritz/mules/select wines, $6 beers, 2 bites for $16
+Midtown,Castell Rooftop Lounge,260 W 40th St, NY 10018,https://www.castellnyc.com,Mon-Fri, 3 PM–6 PM: $10 select cocktails, $8 wines, $7 beers
+Midtown,Industry Bar,355 W 52nd St, NY 10019,http://www.industry-bar.com,Daily, 4 PM–9 PM: $5 well drinks, $4 beers
+Midtown,The Perfect Pint,123 W 45th St, NY 10036,https://www.theperfectpintnyc.com,Mon-Fri, 11 AM–7 PM: $5 select pints, $6 house wines, $7 well drinks
+Midtown,RPM Underground,246 W 54th St, NY 10019,https://rpmunderground.us,Mon-Fri, 1 PM–7 PM: 50% off everything
+SoHo,Beyond The Pale,53 Spring St, NY 10012,https://beyondthepalenyc.com,Mon-Fri, 4:30 PM–7 PM: $10 cocktails, $8 wine, $6 beer
+SoHo,The Crosby Bar,79 Crosby St, NY 10012,https://crosbyhotel.com,Mon-Fri, 4 PM–7 PM: $10 house cocktails, $8 wine, $7 beers
+SoHo,Pegu Club,77 W Houston St, NY 10012,https://peguclub.com,Daily, 5 PM–7 PM: $9 classic cocktails, $8 beer, $6 bar snacks
+SoHo,Jimmy SoHo,15 Thompson St, NY 10013,https://jimmysoho.com,Mon-Thu, 4 PM–6 PM: $12 specialty cocktails, $9 wine, $7 beer
+SoHo,Little Prince,199 Prince St, NY 10012,https://littleprincenyc.com,Mon-Fri, 4 PM–7 PM: $9 cocktails, $8 wine, $6 beer, $5 oysters
+SoHo,The Ship,158 Lafayette St, NY 10013,https://theshipnyc.com,Mon-Fri, 5 PM–7 PM: $8 beer, $9 wine, $11 cocktails
+SoHo,City Winery,155 Varick St, NY 10013,https://citywinery.com,Mon-Fri, 4 PM–6 PM: $7 house wine, $5 beer, discounted small plates
+SoHo,Lola Taverna,210 6th Ave, NY 10014,https://lolatavernanyc.com,Mon-Fri, 3 PM–6 PM: $10 cocktails, $8 wine, $6 beer
+Williamsburg,Hole In The Wall,Bedford Ave and Grand St, Brooklyn,,Mon-Fri, 4 PM–6 PM: $10 cocktails, $10 wine, $5 draft beers, $10 wings
+Williamsburg,Midnights,149 N 6th St, Brooklyn, NY 11249,https://www.midnightsbk.com,Mon-Fri, 4 PM–6:30 PM: $2 off everything
+Williamsburg,Cozy Royale,434 Humboldt St, Brooklyn, NY 11211,https://www.cozyroyale.com,Mon-Fri, 5 PM–7 PM: $10 smash burger with fries, $10 martini
+Williamsburg,BABA on Withers,47 Withers St, Brooklyn, NY 11211,https://www.babaonwithers.com,Sun-Thu, 5 PM–7 PM: $9 wine, $8-11 small plates
+Williamsburg,The Clonard,506 Grand St, Brooklyn, NY 11211,https://www.theclonardbar.com,Mon-Fri, 4 PM–7 PM: $10 specialty cocktails, $6 draft beers, $7 wines
+Williamsburg,Fan Fried Rice Bar,,,Daily until 6 PM: $7 draft pilsner, $8 sake, $10 wines, $12 specialty cocktails
+Williamsburg,The Bedford,110 Bedford Ave, Brooklyn, NY 11249,https://www.thebedford.nyc,Mon-Fri, 4 PM–7 PM: $9 pizza, $12 fries, $8 mini martinis, $9 wine
+Williamsburg,Lighthouse BK,145 Borinquen Pl, Brooklyn, NY 11211,https://lighthousebk.com,Daily until 6 PM: $10 cocktail, $10/$40 wines, $1 oysters, $10 burger
+Williamsburg,The Rusty Face,188 Havemeyer St, Brooklyn, NY 11211,,Tue-Sun, 4 PM–7 PM: $11 mussels, $12 sliders, $2 oysters, $25 margarita pitcher
+Park Slope,The Owl Farm,297 9th St, Brooklyn, NY 11215,https://www.theowlfarm.com,Mon-Fri, 4 PM–6 PM: $2 off all drafts, $6 wine, $6 well drinks
+Park Slope,Fonda,431 7th Ave, Brooklyn, NY 11215,https://fondarestaurant.com,Mon-Fri, 5 PM–7 PM: $7 classic margaritas, $6 draft beer, $8 wine
+Park Slope,Bar Basic,504 5th Ave, Brooklyn, NY 11215,,Daily, 12 PM–7 PM: $4 draft beers, $5 well drinks, $6 wine
+Park Slope,Hugo & Sons,367 7th Ave, Brooklyn, NY 11215,https://www.hugoandsons.com,Daily, 3 PM–6 PM: $6 draft beer, $8 wine, $8 well drinks
+Park Slope,Korzo,667 5th Ave, Brooklyn, NY 11215,https://www.korzobrooklyn.com,Mon-Fri, 4 PM–7 PM: $5 Slovakian draft beers, $7 wine, $7 well drinks
+Park Slope,Pasta Louise,803 8th Ave, Brooklyn, NY 11215,https://www.pastalouise.com,Mon-Fri, 4 PM–6 PM: $6 draft beer, $8 wine, $8 select cocktails
+Murray Hill,The Ginger Man,11 E 36th St, NY 10016,http://gingermanny.com,Mon-Fri, 4 PM–7 PM: $7 craft beer, $6 wine, discounted appetizers
+Murray Hill,Joshua Tree,513 3rd Ave, NY 10016,http://joshuatreenyc.com,Mon-Fri, 4 PM–8 PM: $5 beer, $6 wine, $7 well drinks
+Murray Hill,Albion,575 2nd Ave, NY 10016,http://albionnyc.com,Mon-Fri, 3 PM–7 PM: $6 beer, $7 wine, $9 cocktails
+Murray Hill,The Junction,329 Lexington Ave, NY 10016,http://thejunctionnyc.com,Mon-Fri, 4 PM–7 PM: $6 beer, $7 wine, $8 well drinks
+Murray Hill,Park Avenue Tavern,99 Park Ave, NY 10016,http://parkavenuetavernnyc.com,Mon-Fri, 3 PM–6 PM: $8 signature cocktails, $7 wine, $6 beer
+Murray Hill,Slattery’s Midtown Pub,8 E 36th St, NY 10016,http://slatterysmidtownpub.com,Mon-Fri, 4 PM–7 PM: $5 beer, $6 wine, $8 well drinks
+Murray Hill,La Cava Wine Bar,939 2nd Ave, NY 10022,http://lacavany.com,Mon-Fri, 4 PM–7 PM: $8 glasses of wine, $7 beer, discounted charcuterie
+Murray Hill,Murray Hill Local,539 3rd Ave, NY 10016,http://murrayhilllocal.com,Mon-Fri, 4 PM–8 PM: $6 beer, $7 wine, $8 cocktails
+Murray Hill,Cask Bar & Kitchen,167 E 33rd St, NY 10016,https://www.casknyc.com,Mon-Tue, 4 PM–7 PM; Wed-Fri, 3 PM–7 PM: $10 cocktails, $7 beer, $8 wine
+Kips Bay,Tara Rose,384 3rd Ave, NY 10016,https://tararosenyc.com,Mon-Fri, 4 PM–7 PM: $7 cocktails, 2-for-14 bites, BOGO apps
+Kips Bay,Sundays Well,360 3rd Ave, NY 10016,http://www.sundayswellnyc.com,Sun all day: $10 specialty drinks, $10 burger, $1 oysters
+Kips Bay,The Gem Saloon,375 3rd Ave, NY 10016,http://www.thegemsaloonnyc.com,Mon-Fri, 4 PM–7 PM: $8 wine, $5 beer, half-price drinks
+Kips Bay,Bella Union,411 3rd Ave, NY 10016,http://www.bellaunionnyc.com,Mon-Fri, 4 PM–7 PM: Check website for current specials
+Kips Bay,Ernie O’Malley’s,140 E 27th St, NY 10016,https://www.ernieomalleys.com,Mon-Fri until 7 PM: Good beer selection for drafts and cans
+Kips Bay,Dog & Bone Tavern,3rd Ave, NY 10016,,Mon-Fri, 4 PM–7 PM: Check venue for current specials
+Nomad,Tavern 29,47 E 29th St, NY 10016,,Mon-Fri, 4 PM–7 PM: $7 beer, $8 wine, $9 select cocktails
+Lower East Side,Las’ Lap,74 Orchard St, NY 10002,,Mon-Thu, 5 PM–8 PM: $6 beer, $9 wine, $13 cocktails
+Lower East Side,Ethyl’s Alcohol & Food,1629 2nd Ave, NY 10028,,Tue-Sat, 5 PM–7 PM; Sun, 4 PM–7 PM: $5 beer, $6 wine, $10 select cocktails
+Harlem,Harlem Tavern,2153 Frederick Douglass Blvd, NY 10026,https://harlemtavern.com,Mon-Fri, 4 PM–7 PM: $8 select red & white wine, $9 sangria, $7 house mixed drinks
+Harlem,67 Orange Street,2130 Frederick Douglass Blvd, NY 10026,https://67orangestreet.com,Mon-Fri, 5 PM–7 PM: $12 cocktails, $8 beer, $12 glasses of wine, $40 bottles
+Upper East Side,The Stumble Inn,1454 2nd Ave, NY 10021,,Mon-Fri, open-7 PM: Half off everything
+Upper East Side,The Penrose,1590 2nd Ave, NY 10028,https://www.penrosebar.com,Mon-Fri, 3 PM–7 PM: $2 off drafts, wine, and well drinks
+Upper West Side,Jake’s Dilemma,430 Amsterdam Ave, NY 10024,https://www.jakesdilemmanyc.com,Mon-Fri, 3 PM–7 PM: Half off entire bar, with some exclusions
+Chelsea,Porchlight,271 11th Ave, NY 10001,https://porchlightbar.com,Mon-Fri, 3 PM–7 PM; Sat, 2 PM–7 PM; All Day Sun: $11 cocktails, $6 beer, $5 flasks of punch
+Times Square,The Rum House,228 W 47th St, NY 10036,https://www.therumhousenyc.com,Daily, 4 PM–6 PM: $10 select cocktails, $5 beer, $10 wine

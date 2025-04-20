@@ -1,7 +1,7 @@
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize map
-  const map = L.map('map').setView([40.7536, -73.9832], 13);
+  // Initialize map - center between Manhattan and Brooklyn with wider zoom to accommodate more areas
+  const map = L.map('map').setView([40.7500, -73.9700], 11);
   
   // Add tile layer (OpenStreetMap)
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
