@@ -5,18 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>NYC Happy Hour Finder</title>
+  <title>Buzz on a Budget | NYC's Best Happy Hour Deals</title>
   <link rel="stylesheet" href="src/styles/main.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <meta name="theme-color" content="#ffffff">
-  <!-- Preload fonts for faster rendering -->
-  <link rel="preload" as="font" href="-apple-system" type="font/woff2" crossorigin>
-  <meta name="description" content="Find the best happy hour deals across New York City with our interactive map and filtering options.">
+  <!-- System fonts don't need preloading -->
+  <meta name="description" content="Discover the best happy hour deals across New York City with Buzz on a Budget. Search by neighborhood, day, and view exclusive offers.">
 </head>
-<body class="map-active">
+<body>
   <header id="main-header" class="collapsed">
-    <h1>NYC Happy Hour Finder</h1>
+    <h1>Buzz on a Budget</h1>
     
     <div class="menu-toggle" aria-label="Toggle filters menu">
       <span></span>
@@ -25,6 +24,17 @@
     </div>
     
     <nav>
+      <ul class="nav-main">
+        <li><a href="#" class="active" data-view="home">Home</a></li>
+        <li><a href="#" data-view="map">Map</a></li>
+        <li><a href="#" data-view="list">List</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Floating filter bar that appears in map and list views -->
+  <div class="floating-filter-bar">
+    <div class="filter-bar-content">
       <div class="filters-container">
         <div class="filter">
           <select id="neighborhood" aria-label="Filter by neighborhood">
@@ -73,19 +83,148 @@
           </select>
         </div>
       </div>
-      
-      <ul>
-        <li><a href="#" class="active" data-view="map">Map</a></li>
-        <li><a href="#" data-view="list">List</a></li>
-      </ul>
-    </nav>
-  </header>
+    </div>
+  </div>
+
+  <!-- Welcome overlay for initial load animation -->
+  <div id="welcome-overlay">
+    <div class="welcome-content">
+      <div class="welcome-logo">B</div>
+      <h1>Buzz on a Budget</h1>
+      <p>NYC's Best Happy Hour Deals</p>
+    </div>
+  </div>
 
   <main>
-    <section id="map-view" class="view-container active">
-      <div id="map"></div>
-      <!-- Install prompt removed -->
+    <!-- Home view with carousel -->
+    <section id="home-view" class="view-container active">
+      <div class="hero-section">
+        <h2>Find Your Perfect <span class="highlight">Happy Hour</span></h2>
+        <p class="subtitle">Explore NYC's best drink deals, curated for every budget.</p>
+      </div>
+      
+      <div class="carousel-container">
+        <h3 class="section-title">Featured Spots</h3>
+        <div class="carousel" id="featured-carousel">
+          <!-- Carousel items will be populated by JavaScript -->
+        </div>
+        <div class="carousel-controls">
+          <button class="carousel-arrow prev" aria-label="Previous slide">
+            <svg width="24" height="24" viewBox="0 0 24 24">
+              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/>
+            </svg>
+          </button>
+          <div class="carousel-dots" id="carousel-dots">
+            <!-- Dots will be added by JavaScript -->
+          </div>
+          <button class="carousel-arrow next" aria-label="Next slide">
+            <svg width="24" height="24" viewBox="0 0 24 24">
+              <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="category-section">
+        <h3 class="section-title">Browse by Category</h3>
+        <div class="category-grid">
+          <a href="#" class="category-card" data-category="after-work">
+            <div class="category-icon">🏢</div>
+            <h4>After Work</h4>
+          </a>
+          <a href="#" class="category-card" data-category="weekend">
+            <div class="category-icon">🥂</div>
+            <h4>Weekend</h4>
+          </a>
+          <a href="#" class="category-card" data-category="late-night">
+            <div class="category-icon">🌙</div>
+            <h4>Late Night</h4>
+          </a>
+          <a href="#" class="category-card" data-category="rooftops">
+            <div class="category-icon">🏙️</div>
+            <h4>Rooftops</h4>
+          </a>
+        </div>
+      </div>
+      
+      <div class="neighborhood-highlight">
+        <h3 class="section-title">Popular Neighborhoods</h3>
+        <div class="neighborhood-slider">
+          <a href="#" class="neighborhood-item" data-neighborhood="east_village">
+            <div class="neighborhood-image">
+              <img src="images/image13.jpg" alt="East Village" loading="lazy">
+            </div>
+            <h4>East Village</h4>
+            <p>32 Happy Hours</p>
+          </a>
+          <a href="#" class="neighborhood-item" data-neighborhood="west_village">
+            <div class="neighborhood-image">
+              <img src="images/image1.jpg" alt="West Village" loading="lazy">
+            </div>
+            <h4>West Village</h4>
+            <p>27 Happy Hours</p>
+          </a>
+          <a href="#" class="neighborhood-item" data-neighborhood="williamsburg">
+            <div class="neighborhood-image">
+              <img src="images/image60.jpg" alt="Williamsburg" loading="lazy">
+            </div>
+            <h4>Williamsburg</h4>
+            <p>19 Happy Hours</p>
+          </a>
+          <a href="#" class="neighborhood-item" data-neighborhood="lower_east_side">
+            <div class="neighborhood-image">
+              <img src="images/image24.jpg" alt="Lower East Side" loading="lazy">
+            </div>
+            <h4>Lower East Side</h4>
+            <p>23 Happy Hours</p>
+          </a>
+        </div>
+      </div>
     </section>
+
+    <section id="map-view" class="view-container">
+      <div id="map">
+        <!-- Map container, will be populated by Leaflet -->
+        <div id="map-loading" style="padding: 20px; text-align: center; background-color: #f5f5f7; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+          <div style="margin-bottom: 20px;">Loading map...</div>
+          <button onclick="debugMap()" style="padding: 10px 20px; background-color: #0071e3; color: white; border: none; border-radius: 20px; cursor: pointer;">Debug Map</button>
+        </div>
+      </div>
+    </section>
+    
+    <script>
+      // Helper function to debug map issues
+      function debugMap() {
+        console.log("=== Map Debug Information ===");
+        const mapEl = document.getElementById('map');
+        console.log("Map element exists:", !!mapEl);
+        console.log("Map dimensions:", mapEl.clientWidth + "×" + mapEl.clientHeight);
+        console.log("Map is visible:", mapEl.offsetParent !== null);
+        console.log("Map view active:", document.querySelector('#map-view.active') !== null);
+        
+        const mapInstance = mapEl.__leaflet_instance__;
+        console.log("Map instance exists:", !!mapInstance);
+        
+        if (!mapInstance) {
+          console.log("Attempting to initialize map...");
+          document.querySelector('nav a[data-view="map"]').click();
+          setTimeout(() => {
+            console.log("After click, map instance exists:", !!mapEl.__leaflet_instance__);
+          }, 500);
+        } else {
+          console.log("Map center:", mapInstance.getCenter());
+          console.log("Map zoom:", mapInstance.getZoom());
+          mapInstance.invalidateSize();
+          console.log("Map size invalidated");
+        }
+        
+        // Remove the loading message after debugging
+        const loadingEl = document.getElementById('map-loading');
+        if (loadingEl) {
+          loadingEl.style.display = 'none';
+        }
+      }
+    </script>
 
     <section id="list-view" class="view-container">
       <div class="deals-container" id="deals-list">
@@ -146,8 +285,14 @@
     // Map refresh function (for manual refresh if needed)
     function refreshMap() {
       try {
-        const map = document.querySelector('#map').__leaflet_instance__;
-        if (map) {
+        console.log("Manual map refresh requested");
+        const mapElement = document.querySelector('#map');
+        
+        // If map exists in the DOM, get its instance
+        if (mapElement && mapElement.__leaflet_instance__) {
+          const map = mapElement.__leaflet_instance__;
+          console.log("Found existing map instance, refreshing...");
+          
           // Force reload by calling renderDeals again
           const event = new Event('change');
           document.getElementById('neighborhood').dispatchEvent(event);
@@ -155,38 +300,111 @@
           // Also force invalidate size
           setTimeout(() => {
             map.invalidateSize();
-          }, 100);
+            console.log("Map size invalidated");
+          }, 300);
+        } else {
+          console.log("No map instance found, initializing new map...");
+          // If map view is active, initialize a new map
+          if (document.querySelector('#map-view.active')) {
+            // Simulate click on map nav item to force reinitialization
+            document.querySelector('nav a[data-view="map"]').click();
+          }
         }
       } catch (e) {
         console.error('Error refreshing map:', e);
       }
     }
     
-    // Fix mobile map rendering
+    // Fix mobile map rendering on resize
     window.addEventListener('resize', function() {
       if (document.querySelector('#map-view.active')) {
         setTimeout(function() {
-          const mapInstance = document.querySelector('#map').__leaflet_instance__;
-          if (mapInstance) {
+          // This now uses proper null checking
+          const mapElement = document.querySelector('#map');
+          if (mapElement && mapElement.__leaflet_instance__) {
+            const mapInstance = mapElement.__leaflet_instance__;
             mapInstance.invalidateSize();
-            updateMarkerCount();
+            console.log("Map resized after window resize");
+          } else {
+            // Try to refresh the map if no instance is found
+            refreshMap();
           }
-        }, 200);
+        }, 300);
       }
     });
     
     // Fix map on orientation change for mobile
     window.addEventListener('orientationchange', function() {
-      setTimeout(function() {
-        const mapInstance = document.querySelector('#map').__leaflet_instance__;
-        if (mapInstance) {
-          mapInstance.invalidateSize();
-          updateMarkerCount();
-        }
-      }, 300);  // Longer timeout for orientation changes
+      console.log("Orientation change detected");
+      if (document.querySelector('#map-view.active')) {
+        // Use longer timeout for orientation changes
+        setTimeout(function() {
+          // This now uses proper null checking
+          const mapElement = document.querySelector('#map');
+          if (mapElement && mapElement.__leaflet_instance__) {
+            console.log("Resizing map after orientation change");
+            const mapInstance = mapElement.__leaflet_instance__;
+            mapInstance.invalidateSize();
+            console.log("Map resized after window resize");
+          } else {
+            console.log("No map instance found after orientation change, refreshing");
+            refreshMap();
+          }
+        }, 500);  // Even longer timeout for orientation changes
+      }
     });
     
     // We've removed the marker count debugging
+    
+    // Alternative map initialization function that can be called from console
+    function forceInitMap() {
+      console.log("Manually forcing map initialization...");
+      
+      // Ensure map view is active
+      if (!document.querySelector('#map-view.active')) {
+        document.querySelector('nav a[data-view="map"]').click();
+        console.log("Switched to map view");
+      }
+      
+      // Try to access app.js functions through global scope
+      setTimeout(() => {
+        try {
+          // Check if map exists on the DOM
+          const mapEl = document.getElementById('map');
+          if (mapEl && mapEl.__leaflet_instance__) {
+            console.log("Map already exists, refreshing...");
+            mapEl.__leaflet_instance__.invalidateSize();
+            const event = new Event('change');
+            document.getElementById('neighborhood').dispatchEvent(event);
+          } else {
+            console.log("No map instance found, creating new one...");
+            
+            // Create a basic map directly
+            const mymap = L.map('map').setView([40.7500, -73.9700], 12);
+            
+            // Add the tile layer (using light style)
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+              subdomains: 'abcd',
+              maxZoom: 19
+            }).addTo(mymap);
+            
+            // Store the map on the DOM element
+            mapEl.__leaflet_instance__ = mymap;
+            
+            // Hide loading indicator
+            const loadingEl = document.getElementById('map-loading');
+            if (loadingEl) {
+              loadingEl.style.display = 'none';
+            }
+            
+            console.log("Map created manually");
+          }
+        } catch (e) {
+          console.error("Error in manual map initialization:", e);
+        }
+      }, 300);
+    }
     
     // Install prompt feature removed
   </script>
