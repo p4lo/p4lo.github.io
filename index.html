@@ -14,9 +14,15 @@
   <link rel="preload" as="font" href="-apple-system" type="font/woff2" crossorigin>
   <meta name="description" content="Find the best happy hour deals across New York City with our interactive map and filtering options.">
 </head>
-<body>
-  <header>
+<body class="map-active">
+  <header id="main-header" class="collapsed">
     <h1>NYC Happy Hour Finder</h1>
+    
+    <div class="menu-toggle" aria-label="Toggle filters menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
     
     <nav>
       <div class="filters-container">
@@ -75,12 +81,6 @@
         <li><a href="#" class="active" data-view="map">Map</a></li>
         <li><a href="#" data-view="list">List</a></li>
       </ul>
-      
-      <div class="menu-toggle" aria-label="Toggle filters menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
     </nav>
   </header>
 
@@ -112,16 +112,19 @@
   <script src="src/utils/app.js"></script>
   
   <script>
-    // Mobile menu toggle - simplified
+    // Toggle header expansion for mobile only
     document.querySelector('.menu-toggle')?.addEventListener('click', function() {
-      document.body.classList.toggle('menu-open');
+      // Only toggle collapsed class on mobile screens
+      if (window.innerWidth <= 768) {
+        document.getElementById('main-header').classList.toggle('collapsed');
+      }
     });
     
-    // Close mobile menu when a selection is made
-    document.querySelectorAll('.filters-container select').forEach(function(select) {
-      select.addEventListener('change', function() {
+    // Close header when selection is made
+    document.querySelectorAll('.filters-container select, nav ul li a').forEach(function(element) {
+      element.addEventListener('click', function() {
         if (window.innerWidth <= 768) {
-          document.body.classList.remove('menu-open');
+          document.getElementById('main-header').classList.add('collapsed');
         }
       });
     });
@@ -198,8 +201,10 @@
       }, 300);  // Longer timeout for orientation changes
     });
     
-    // Monitor marker status 
-    setInterval(updateMarkerCount, 2000); // Update marker count every 2 seconds
+    // Monitor marker status initially and after interactions
+    setTimeout(updateMarkerCount, 1000); // Initial count after map loads
+    document.getElementById('neighborhood').addEventListener('change', updateMarkerCount);
+    document.getElementById('day').addEventListener('change', updateMarkerCount);
     
     // Show install prompt for iOS users (keeping this feature)
     const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;

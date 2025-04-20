@@ -1,7 +1,7 @@
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-  // Create stats panel element
-  createStatsPanel();
+  // Create desktop stats panel
+  createDesktopStatsPanel();
   
   // Initialize map with modern styling - simplified for mobile
   const map = L.map('map', {
@@ -22,25 +22,31 @@ document.addEventListener('DOMContentLoaded', () => {
     detectRetina: true  // Support high-DPI displays like iPhone
   }).addTo(map);
   
-  // Fallback to standard Leaflet markers for better compatibility
-  const customIcon = new L.Icon({
-    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
+  // Custom Apple-style marker icon with refined touch target for mobile
+  const customIcon = L.divIcon({
+    className: 'custom-map-marker',
+    html: '<div class="marker-inner"></div>',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+    popupAnchor: [0, -10] // Position popup slightly above marker
   });
 
   // Markers group
   const markers = L.layerGroup().addTo(map);
   
-  // Create stats panel - desktop only
-  function createStatsPanel() {
-    // Only create the stats panel on desktop devices
-    if (window.innerWidth >= 768) {
+  // Create permanent stats panel for desktop
+  function createDesktopStatsPanel() {
+    if (window.innerWidth >= 769) {
+      // Set initial map-active class on body if map view is active
+      const isMapActive = document.querySelector('#map-view.active') !== null;
+      if (isMapActive) {
+        document.body.classList.add('map-active');
+      }
+      
       const statsPanel = document.createElement('div');
       statsPanel.className = 'stats-panel';
+      statsPanel.id = 'desktop-stats-panel';
+      
       statsPanel.innerHTML = `
         <div class="stats-panel-header">
           <h3>Happy Hour Details</h3>
@@ -69,18 +75,14 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
       `;
+      
       document.body.appendChild(statsPanel);
       
-      // Make panel collapsible
+      // Make panel collapsible for desktop
       const header = statsPanel.querySelector('.stats-panel-header');
       header.addEventListener('click', () => {
         statsPanel.classList.toggle('collapsed');
       });
-      
-      // Show panel when in map view (for desktop only)
-      setTimeout(() => {
-        statsPanel.classList.add('active');
-      }, 1000);
     }
   }
   
@@ -106,12 +108,12 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
           map.invalidateSize();
           
-          // Show stats panel on map view
-          document.querySelector('.stats-panel').classList.add('active');
+          // Show stats panel only in map view (via a class on body)
+          document.body.classList.add('map-active');
         }, 100);
       } else {
-        // Hide stats panel on list view
-        document.querySelector('.stats-panel').classList.remove('active');
+        // Hide stats panel in list view
+        document.body.classList.remove('map-active');
       }
     });
   });
@@ -167,6 +169,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Update stats panel with current filter information
   function updateStatsPanel(deals, neighborhood, day) {
+    // Only update if we're on desktop
+    if (window.innerWidth < 769) return;
+    
     // Get neighborhood display name
     let neighborhoodDisplay = 'All Neighborhoods';
     if (neighborhood !== 'all') {
@@ -181,75 +186,38 @@ document.addEventListener('DOMContentLoaded', () => {
       if (option) dayDisplay = option.textContent;
     }
     
-    // Update stats elements
-    document.getElementById('stats-neighborhood').textContent = neighborhoodDisplay;
-    document.getElementById('stats-day').textContent = dayDisplay;
-    document.getElementById('stats-count').textContent = deals.length;
-    
-    // Price estimate based on number of deals
-    const priceLevel = deals.length > 50 ? '$ - $$' : deals.length > 20 ? '$$ - $$$' : '$$$';
-    document.getElementById('stats-price').textContent = priceLevel;
+    // Update stats elements if they exist
+    const statsNeighborhood = document.getElementById('stats-neighborhood');
+    if (statsNeighborhood) {
+      statsNeighborhood.textContent = neighborhoodDisplay;
+      document.getElementById('stats-day').textContent = dayDisplay;
+      document.getElementById('stats-count').textContent = deals.length;
+      
+      // Price estimate based on number of deals
+      const priceLevel = deals.length > 50 ? '$ - $$' : deals.length > 20 ? '$$ - $$$' : '$$$';
+      document.getElementById('stats-price').textContent = priceLevel;
+    }
   }
   
-  // Function to render map markers with better mobile compatibility
+  // Function to render map markers with Apple-style
   function renderMapMarkers(deals) {
     // Clear existing markers
     markers.clearLayers();
     
-    // Debug marker count to console
-    console.log(`Rendering ${deals.length} markers on map`);
-    
-    // Create a backup standard marker for devices with SVG issues
-    const defaultIcon = new L.Icon.Default();
-    
     deals.forEach(deal => {
-      try {
-        // Try to add with custom icon first
-        const marker = L.marker(deal.location, { icon: customIcon })
-          .bindPopup(`
-            <div class="popup-content">
-              <h3>${deal.name}</h3>
-              <p>${deal.address}</p>
-              <p><strong>${deal.hours}</strong></p>
-              <p>${deal.deals}</p>
-              ${deal.website ? `<a href="${deal.website}" target="_blank" class="website-link">Visit Website</a>` : ''}
-              <a href="#" class="popup-link" data-id="${deal.id}">View Details</a>
-            </div>
-          `);
-        
-        markers.addLayer(marker);
-        
-        // Create a visible indicator for debugging
-        if (window.location.search.includes('debug=true')) {
-          L.circle(deal.location, {
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.5,
-            radius: 100
-          }).addTo(map);
-        }
-      } catch (err) {
-        console.error('Error creating marker:', err);
-        
-        // Fallback to standard marker if custom one fails
-        try {
-          const fallbackMarker = L.marker(deal.location, { icon: defaultIcon })
-            .bindPopup(`
-              <div class="popup-content">
-                <h3>${deal.name}</h3>
-                <p>${deal.address}</p>
-                <p><strong>${deal.hours}</strong></p>
-                <p>${deal.deals}</p>
-                ${deal.website ? `<a href="${deal.website}" target="_blank" class="website-link">Visit Website</a>` : ''}
-                <a href="#" class="popup-link" data-id="${deal.id}">View Details</a>
-              </div>
-            `);
-          
-          markers.addLayer(fallbackMarker);
-        } catch (fallbackErr) {
-          console.error('Fallback marker also failed:', fallbackErr);
-        }
-      }
+      const marker = L.marker(deal.location, { icon: customIcon })
+        .bindPopup(`
+          <div class="popup-content">
+            <h3>${deal.name}</h3>
+            <p>${deal.address}</p>
+            <p><strong>${deal.hours}</strong></p>
+            <p>${deal.deals}</p>
+            ${deal.website ? `<a href="${deal.website}" target="_blank" class="website-link">Visit Website</a>` : ''}
+            <a href="#" class="popup-link" data-id="${deal.id}">View Details</a>
+          </div>
+        `);
+      
+      markers.addLayer(marker);
     });
     
     // If we have deals, fit bounds to see all markers
@@ -384,18 +352,25 @@ document.addEventListener('DOMContentLoaded', () => {
   style.innerHTML = `
     .custom-map-marker {
       background: transparent;
+      border: none;
+      contain: layout paint style;
     }
     .marker-inner {
-      width: 18px; /* Larger for mobile touch */
-      height: 18px;
+      width: 14px; /* Smaller, more subtle size */
+      height: 14px;
       background: #0071e3;
       border-radius: 50%;
-      box-shadow: 0 0 0 5px rgba(0, 113, 227, 0.3);
-      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+      will-change: transform, box-shadow;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
     .leaflet-marker-icon:hover .marker-inner {
-      transform: scale(1.2);
-      box-shadow: 0 0 0 6px rgba(0, 113, 227, 0.2);
+      transform: translate(-50%, -50%) scale(1.1);
+      box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
     }
     .filters-changed .deals-container {
       opacity: 0.8;
@@ -445,8 +420,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       .leaflet-marker-icon:hover .marker-inner {
-        transform: none;
-        box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.3);
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
+      }
+      
+      .leaflet-marker-icon:active .marker-inner {
+        transform: translate(-50%, -50%) scale(1.1);
+        box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
+        transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
       }
       
       .deal-card:hover {
@@ -457,5 +438,12 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   document.head.appendChild(style);
   
-  // Allow normal map zooming without interference
+  // Window resize handler to handle orientation changes
+  window.addEventListener('resize', function() {
+    if (document.querySelector('#map-view.active')) {
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 200);
+    }
+  });
 });
