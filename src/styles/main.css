@@ -135,6 +135,25 @@ nav ul li a.active:after {
   box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
 }
 
+/* Prevent parent elements from capturing select touch events on mobile */
+@media (max-width: 768px) {
+  .filter select {
+    z-index: 2;
+    position: relative;
+    padding: 0.75rem 1.2rem; /* Larger touch target on mobile */
+  }
+  
+  /* Override iOS default styles */
+  .filter select:focus {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+  
+  header nav .filters-container {
+    z-index: 2;
+    position: relative;
+  }
+}
+
 main {
   display: flex;
   padding-top: 70px;

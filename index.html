@@ -104,18 +104,45 @@
   
   <script>
     // Toggle header expansion for mobile only
-    document.querySelector('.menu-toggle')?.addEventListener('click', function() {
+    document.querySelector('.menu-toggle')?.addEventListener('click', function(e) {
+      // Prevent event from bubbling
+      e.stopPropagation();
+      
       // Only toggle collapsed class on mobile screens
       if (window.innerWidth <= 768) {
-        document.getElementById('main-header').classList.toggle('collapsed');
+        const header = document.getElementById('main-header');
+        header.classList.toggle('collapsed');
+        
+        // Delay any click handlers to ensure menu is fully expanded
+        if (!header.classList.contains('collapsed')) {
+          // Give the menu time to expand before allowing interactions
+          setTimeout(function() {
+            // Make select elements clickable
+            document.querySelectorAll('.filter select').forEach(function(select) {
+              select.style.pointerEvents = 'auto';
+            });
+          }, 100);
+        }
       }
     });
     
-    // Close header when selection is made
-    document.querySelectorAll('.filters-container select, nav ul li a').forEach(function(element) {
+    // Close header when tab selection is made, but not for dropdown selections
+    document.querySelectorAll('nav ul li a').forEach(function(element) {
       element.addEventListener('click', function() {
         if (window.innerWidth <= 768) {
           document.getElementById('main-header').classList.add('collapsed');
+        }
+      });
+    });
+    
+    // For dropdowns, only close the header when a selection has been completed
+    document.querySelectorAll('.filters-container select').forEach(function(element) {
+      element.addEventListener('change', function() {
+        if (window.innerWidth <= 768) {
+          // Use timeout to ensure the selection is complete
+          setTimeout(function() {
+            document.getElementById('main-header').classList.add('collapsed');
+          }, 300);
         }
       });
     });

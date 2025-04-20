@@ -422,6 +422,28 @@ document.addEventListener('DOMContentLoaded', () => {
       .stats-panel-content {
         -webkit-overflow-scrolling: touch;
       }
+      
+      /* Prevent zooming on form elements */
+      .filter select {
+        font-size: 16px;
+      }
+      
+      /* Fix dropdowns on iOS */
+      @media (max-width: 768px) {
+        .filter select {
+          z-index: 1001;
+        }
+        
+        /* Stop weird iOS form behavior */
+        header.collapsed {
+          pointer-events: none;
+        }
+        
+        header.collapsed h1,
+        header.collapsed .menu-toggle {
+          pointer-events: auto;
+        }
+      }
     }
     
     /* Remove hover effects on touch devices */
