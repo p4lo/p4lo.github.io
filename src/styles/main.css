@@ -303,13 +303,38 @@ body:not(.map-active) #desktop-stats-panel {
   border-radius: 12px;
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
-  padding: 1.75rem;
+  padding: 0;
   border: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.deal-info {
+  padding: 1.75rem;
+}
+
+.deal-image-container {
+  height: 180px;
+  overflow: hidden;
+  position: relative;
+  background-color: #f5f5f7;
+}
+
+.deal-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.3s ease;
 }
 
 .deal-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.deal-card:hover .deal-image {
+  transform: scale(1.05);
 }
 
 .deal-name {
@@ -382,7 +407,23 @@ body:not(.map-active) #desktop-stats-panel {
 
 .popup-content {
   text-align: center;
-  padding: 0.75rem;
+  padding: 0.5rem;
+}
+
+.popup-image-container {
+  width: 100%;
+  height: 120px;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  background-color: #f5f5f7;
+}
+
+.popup-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .popup-content h3 {
@@ -396,6 +437,12 @@ body:not(.map-active) #desktop-stats-panel {
   margin-bottom: 0.5rem;
   font-size: 0.85rem;
   color: #86868b;
+}
+
+.custom-popup .leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  padding: 0.25rem;
+  overflow: hidden;
 }
 
 .popup-link, .website-link {
@@ -662,8 +709,15 @@ body:not(.map-active) #desktop-stats-panel {
   }
   
   .deal-card {
-    padding: 1.25rem;
     border-radius: 8px;
+  }
+  
+  .deal-info {
+    padding: 1.25rem;
+  }
+  
+  .deal-image-container {
+    height: 150px;
   }
   
   .filters-container {

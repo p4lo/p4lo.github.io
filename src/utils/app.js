@@ -199,6 +199,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   
+  // Use the confirmed working path pattern for all images
+  function getImageUrl(imagePath) {
+    if (!imagePath) return null;
+    
+    // We know the working path is "images/[filename]"
+    return imagePath;
+  }
+  
   // Function to render map markers with Apple-style
   function renderMapMarkers(deals) {
     // Clear existing markers
@@ -208,6 +216,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const marker = L.marker(deal.location, { icon: customIcon })
         .bindPopup(`
           <div class="popup-content">
+            ${deal.imagePath ? `<div class="popup-image-container">
+              <img src="${getImageUrl(deal.imagePath)}" alt="${deal.name}" class="popup-image">
+            </div>` : ''}
             <h3>${deal.name}</h3>
             <p>${deal.address}</p>
             <p><strong>${deal.hours}</strong></p>
@@ -215,7 +226,10 @@ document.addEventListener('DOMContentLoaded', () => {
             ${deal.website ? `<a href="${deal.website}" target="_blank" class="website-link">Visit Website</a>` : ''}
             <a href="#" class="popup-link" data-id="${deal.id}">View Details</a>
           </div>
-        `);
+        `, {
+          maxWidth: 300,
+          className: 'custom-popup'
+        });
       
       markers.addLayer(marker);
     });
@@ -246,6 +260,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Log for debugging
     console.log(`Rendering ${deals.length} deals in list view`);
     
+    // Debug: Log image paths
+    const dealsWithImages = deals.filter(deal => deal.imagePath);
+    console.log(`Deals with images: ${dealsWithImages.length}`);
+    
+    // Debug removed - we know the working path pattern now
+    
     // Create fragment for better performance
     const fragment = document.createDocumentFragment();
     
@@ -255,6 +275,9 @@ document.addEventListener('DOMContentLoaded', () => {
       dealCard.style.animationDelay = `${index * 0.05}s`;
       
       dealCard.innerHTML = `
+        ${deal.imagePath ? `<div class="deal-image-container">
+          <img src="${getImageUrl(deal.imagePath)}" alt="${deal.name}" class="deal-image">
+        </div>` : ''}
         <div class="deal-info">
           <h3 class="deal-name">${deal.name}</h3>
           <p class="deal-location">${deal.subNeighborhood || deal.neighborhood}</p>
