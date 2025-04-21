@@ -8,6 +8,8 @@
   <title>Cocktail Compass | NYC's Best Happy Hour Deals</title>
   <link rel="stylesheet" href="src/styles/main.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <meta name="theme-color" content="#ffffff">
   <!-- System fonts don't need preloading -->
@@ -16,13 +18,6 @@
 <body>
   <header id="main-header" class="collapsed">
     <div class="nav-pill-container">
-      <div class="app-logo">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="app-icon">
-          <!-- Martini Glass Icon -->
-          <path d="M8 21h8m-4-7v7M4 4h16l-8 10z"></path>
-        </svg>
-      </div>
-      
       <nav>
         <ul class="nav-pill">
           <li><a href="#" class="active" data-view="home" aria-label="Home">
@@ -34,13 +29,16 @@
           <li><a href="#" data-view="list" aria-label="List">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
           </a></li>
+          <li><button id="active-now-nav-btn" class="active-now-nav-btn" aria-label="Active Now">
+            <span class="active-now-icon">🍹</span>
+          </button></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- Floating filter bar that appears in map and list views -->
-  <div class="floating-filter-bar">
+  <!-- Floating filter bar for list view -->
+  <div class="floating-filter-bar list-filter-bar">
     <div class="filter-bar-content">
       <div class="filters-container">
         <div class="filter">
@@ -79,6 +77,60 @@
         
         <div class="filter">
           <select id="day" aria-label="Filter by day">
+            <option value="all">All Days</option>
+            <option value="monday">Monday</option>
+            <option value="tuesday">Tuesday</option>
+            <option value="wednesday">Wednesday</option>
+            <option value="thursday">Thursday</option>
+            <option value="friday">Friday</option>
+            <option value="saturday">Saturday</option>
+            <option value="sunday">Sunday</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Map filter bar - same as list view -->
+  <div class="map-filter-bar floating-filter-bar">
+    <div class="filter-bar-content">
+      <div class="filters-container">
+        <div class="filter">
+          <select id="map-neighborhood" aria-label="Filter by neighborhood">
+            <option value="all">All Neighborhoods</option>
+            <!-- Manhattan -->
+            <optgroup label="Manhattan">
+              <option value="west_village">West Village</option>
+              <option value="east_village">East Village</option>
+              <option value="lower_east_side">Lower East Side</option>
+              <option value="midtown">Midtown</option>
+              <option value="chelsea">Chelsea</option>
+              <option value="times_square">Times Square</option>
+              <option value="murray_hill">Murray Hill</option>
+              <option value="financial_district">Financial District</option>
+              <option value="upper_east_side">Upper East Side</option>
+              <option value="upper_west_side">Upper West Side</option>
+              <option value="hells_kitchen">Hell's Kitchen</option>
+              <option value="nolita">Nolita</option>
+              <option value="soho">SoHo</option>
+              <option value="harlem">Harlem</option>
+              <option value="kips_bay">Kips Bay</option>
+              <option value="union_square">Union Square</option>
+              <option value="nomad">NoMad</option>
+              <option value="gramercy">Gramercy</option>
+            </optgroup>
+            <!-- Brooklyn -->
+            <optgroup label="Brooklyn">
+              <option value="williamsburg">Williamsburg</option>
+              <option value="bushwick">Bushwick</option>
+              <option value="park_slope">Park Slope</option>
+              <option value="greenpoint">Greenpoint</option>
+            </optgroup>
+          </select>
+        </div>
+        
+        <div class="filter">
+          <select id="map-day" aria-label="Filter by day">
             <option value="all">All Days</option>
             <option value="monday">Monday</option>
             <option value="tuesday">Tuesday</option>
@@ -223,6 +275,7 @@
   </main>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script>
     // Preload map tiles for faster loading
     document.addEventListener('DOMContentLoaded', function() {

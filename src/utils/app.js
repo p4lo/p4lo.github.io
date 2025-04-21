@@ -1,3 +1,19 @@
+// Global variables to be used throughout the application
+let map = null;
+let markers = null;
+let customIcon = null;
+let showActiveHappyHoursOnly = false;
+let useFakeTime = true; // Set to true to enable fake time for testing
+const fakeTime = {
+  // Set to Wednesday at 5:30pm - prime happy hour time
+  day: 3, // 0 = Sunday, 3 = Wednesday
+  hours: 17,
+  minutes: 30
+};
+
+// Log fake time setting for debugging
+console.log("FAKE TIME ENABLED:", useFakeTime);
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
   // First, ensure correct view is shown on mobile
@@ -27,14 +43,85 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('map-active');
   }
   
+  // Set up active happy hour filter buttons
+  const activeNowNavBtn = document.getElementById('active-now-nav-btn');
+  
+  if (activeNowNavBtn) {
+    activeNowNavBtn.addEventListener('click', () => {
+      showActiveHappyHoursOnly = !showActiveHappyHoursOnly;
+      renderDeals();
+      
+      // Show active count in console for debugging
+      if (showActiveHappyHoursOnly) {
+        countActiveHappyHours();
+      }
+      
+      // Update all button states
+      updateActiveHappyHourButtonState();
+    });
+  }
+  
+  // Count active happy hours on initial load for debugging and set up initial map view
+  setTimeout(() => {
+    // Turn off verbose logging for production - too noisy
+    const verboseLogging = false;
+    
+    // Store original console methods
+    const originalLog = console.log;
+    const originalError = console.error;
+    
+    // If verbose logging is disabled, temporarily silence console
+    if (!verboseLogging) {
+      console.log = function() {};
+      console.error = function() {};
+    }
+    
+    console.log("=== Active Happy Hours Debug Info ===");
+    const activeDeals = countActiveHappyHours();
+    
+    // Restore console methods
+    console.log = originalLog;
+    console.error = originalError;
+    
+    // Log summary info even if verbose logging is off
+    console.log("=== SUMMARY ===");
+    console.log("Active happy hours found:", activeDeals.length);
+    console.log("First few active deals:", activeDeals.slice(0, 5).map(d => d.name));
+    
+    // Test 5 specific deals to verify time parsing
+    console.log("\n=== TESTING SPECIFIC DEALS ===");
+    const testDeals = [
+      happyHourDeals[0],  // First deal
+      happyHourDeals[10], // Random spot check
+      happyHourDeals[20], // Random spot check
+      happyHourDeals[30], // Random spot check
+      happyHourDeals[50]  // Random spot check
+    ];
+    
+    testDeals.forEach(deal => {
+      console.log(`Testing ${deal.name}: ${deal.hours}`);
+      const timeRange = parseTimeRange(deal.hours);
+      console.log(`  Parsed as: ${timeRange ? `${timeRange.startTime}-${timeRange.endTime} minutes` : 'FAILED TO PARSE'}`);
+    });
+    
+    // Force a render to show active happy hours button count
+    updateActiveHappyHourButtonState();
+    
+    // Set initial map view regardless of current state
+    if (map) {
+      console.log("Forcing initial map view to reasonable zoom level");
+      // Force a reasonable zoom level
+      map.setView([40.7500, -73.9700], 10);
+      map.invalidateSize();
+    }
+  }, 2000);
+  
   // Initialize home page components
   initHomepage();
   
   // Stats panel removed
   
-  // Define map and markers as global variables to access throughout the app
-  let map = null;
-  let markers = null;
+  // Map and markers are now defined globally at the top of the file
   
   // Initialize map when needed
   function initMap() {
@@ -76,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         zoomAnimation: false, // Disable animations for better performance
         markerZoomAnimation: false, // Disable animations for better performance
         preferCanvas: true // Use canvas renderer for better performance
-      }).setView([40.7500, -73.9700], 11);
+      }).setView([40.7500, -73.9700], 10);
       
       // Save map instance to DOM for external script access
       document.querySelector('#map').__leaflet_instance__ = map;
@@ -89,8 +176,61 @@ document.addEventListener('DOMContentLoaded', () => {
         detectRetina: false  // Disable high-DPI support for better performance
       }).addTo(map);
       
-      // Initialize markers layer group
-      markers = L.layerGroup().addTo(map);
+      // Initialize marker clusters instead of simple layer group
+      markers = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        spiderfyOnMaxZoom: true,
+        disableClusteringAtZoom: 16,
+        maxClusterRadius: 50,
+        iconCreateFunction: function(cluster) {
+          const count = cluster.getChildCount();
+          const currentZoom = map.getZoom();
+          let html, className;
+          
+          // City overview (minimal info)
+          if (currentZoom < 13) {
+            html = `<div class="marker-cluster-inner"><span>${count}</span></div>`;
+            className = 'cluster-minimal';
+          } 
+          // District view (add neighborhood info)
+          else if (currentZoom < 15) {
+            // Get most common neighborhood in this cluster
+            const neighborhoods = getClusterNeighborhoods(cluster);
+            const primaryNeighborhood = getMostCommon(neighborhoods);
+            html = `<div class="marker-cluster-inner">
+                      <span>${count}</span>
+                      <div class="cluster-neighborhood">${primaryNeighborhood}</div>
+                    </div>`;
+            className = 'cluster-neighborhood';
+          } 
+          // Neighborhood view (more detailed)
+          else {
+            // Get active happy hours count
+            const activeCount = getActiveHappyHours(cluster);
+            html = `<div class="marker-cluster-inner">
+                      <span>${count}</span>
+                      ${activeCount > 0 ? `<div class="active-now">${activeCount} active</div>` : ''}
+                    </div>`;
+            className = activeCount > 0 ? 'cluster-active' : 'cluster-detailed';
+          }
+          
+          // Size classes based on marker count
+          let sizeClass;
+          if (count < 10) {
+            sizeClass = 'marker-cluster-small';
+          } else if (count < 30) {
+            sizeClass = 'marker-cluster-medium';
+          } else {
+            sizeClass = 'marker-cluster-large';
+          }
+          
+          return L.divIcon({
+            html: html,
+            className: `custom-cluster-icon ${className} ${sizeClass}`,
+            iconSize: L.point(40, 40)
+          });
+        }
+      }).addTo(map);
       
       // Set up event handlers for the map
       setupMapEventHandlers();
@@ -143,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
         markerZoomAnimation: false,
         preferCanvas: true,
         renderer: L.canvas()
-      }).setView([40.7500, -73.9700], 12);
+      }).setView([40.7500, -73.9700], 10);
       
       // Add dark-themed map tiles
       L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
@@ -158,7 +298,62 @@ document.addEventListener('DOMContentLoaded', () => {
       // Store map reference globally
       map = mymap;
       mapEl.__leaflet_instance__ = mymap;
-      markers = L.layerGroup().addTo(map);
+      
+      // Use marker clusters instead of simple layer group
+      markers = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        spiderfyOnMaxZoom: true,
+        disableClusteringAtZoom: 16,
+        maxClusterRadius: 50,
+        iconCreateFunction: function(cluster) {
+          const count = cluster.getChildCount();
+          const currentZoom = map.getZoom();
+          let html, className;
+          
+          // City overview (minimal info)
+          if (currentZoom < 13) {
+            html = `<div class="marker-cluster-inner"><span>${count}</span></div>`;
+            className = 'cluster-minimal';
+          } 
+          // District view (add neighborhood info)
+          else if (currentZoom < 15) {
+            // Get most common neighborhood in this cluster
+            const neighborhoods = getClusterNeighborhoods(cluster);
+            const primaryNeighborhood = getMostCommon(neighborhoods);
+            html = `<div class="marker-cluster-inner">
+                      <span>${count}</span>
+                      <div class="cluster-neighborhood">${primaryNeighborhood}</div>
+                    </div>`;
+            className = 'cluster-neighborhood';
+          } 
+          // Neighborhood view (more detailed)
+          else {
+            // Get active happy hours count
+            const activeCount = getActiveHappyHours(cluster);
+            html = `<div class="marker-cluster-inner">
+                      <span>${count}</span>
+                      ${activeCount > 0 ? `<div class="active-now">${activeCount} active</div>` : ''}
+                    </div>`;
+            className = activeCount > 0 ? 'cluster-active' : 'cluster-detailed';
+          }
+          
+          // Size classes based on marker count
+          let sizeClass;
+          if (count < 10) {
+            sizeClass = 'marker-cluster-small';
+          } else if (count < 30) {
+            sizeClass = 'marker-cluster-medium';
+          } else {
+            sizeClass = 'marker-cluster-large';
+          }
+          
+          return L.divIcon({
+            html: html,
+            className: `custom-cluster-icon ${className} ${sizeClass}`,
+            iconSize: L.point(40, 40)
+          });
+        }
+      }).addTo(map);
       
       // Create markers right away but keep map hidden until needed
       if (!document.querySelector('#map-view.active')) {
@@ -182,8 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize map immediately after page load
   initializeMapImmediately();
   
-  // Custom marker icon styled for dark theme maps
-  let customIcon;
+  // Custom marker icon is now defined globally
   
   // Create custom marker icon function to ensure it's created when needed
   function createCustomIcon() {
@@ -320,14 +514,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   
-  // Filter event listeners
+  // Get filter elements for both list and map views
   const neighborhoodFilter = document.getElementById('neighborhood');
   const dayFilter = document.getElementById('day');
+  const mapNeighborhoodFilter = document.getElementById('map-neighborhood');
+  const mapDayFilter = document.getElementById('map-day');
   
   // Initial render
   renderDeals();
   
-  // Filter event listeners
+  // List view filter event listeners
   neighborhoodFilter.addEventListener('change', () => {
     renderDeals();
     // Add subtle animation to indicate refresh
@@ -346,6 +542,79 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 300);
   });
   
+  // Map view filter event listeners
+  mapNeighborhoodFilter.addEventListener('change', () => {
+    // Sync with list view filter
+    neighborhoodFilter.value = mapNeighborhoodFilter.value;
+    renderDeals();
+    // Add subtle animation to indicate refresh
+    document.body.classList.add('filters-changed');
+    setTimeout(() => {
+      document.body.classList.remove('filters-changed');
+    }, 300);
+  });
+  
+  mapDayFilter.addEventListener('change', () => {
+    // Sync with list view filter
+    dayFilter.value = mapDayFilter.value;
+    renderDeals();
+    // Add subtle animation to indicate refresh
+    document.body.classList.add('filters-changed');
+    setTimeout(() => {
+      document.body.classList.remove('filters-changed');
+    }, 300);
+  });
+  
+  // Active happy hour filter state and fake time are now defined globally
+  
+  // Function to check if a deal has an active happy hour
+  function isHappyHourActive(deal) {
+    if (!deal || !deal.days || !deal.hours) {
+      console.log(`Deal has missing data: ${deal ? deal.name : 'undefined deal'}`);
+      return false;
+    }
+    
+    console.log(`\nChecking if happy hour is active for: ${deal.name}`);
+    console.log(`  Hours: ${deal.hours}, Days: ${deal.days.join(', ')}`);
+    
+    // Use either real time or fake time for testing
+    const now = new Date();
+    
+    // Get the day of week (0-6, where 0 is Sunday)
+    const currentDay = useFakeTime 
+      ? ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][fakeTime.day]
+      : ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][now.getDay()];
+    
+    console.log(`  Current day: ${currentDay}`);
+    
+    // First check if the deal is active today
+    if (!deal.days.includes(currentDay)) {
+      console.log(`  Not active today (${currentDay})`);
+      return false;
+    }
+    
+    console.log(`  Day matches: YES`);
+    
+    // Get current time in 24-hour format
+    const hours = useFakeTime ? fakeTime.hours : now.getHours();
+    const minutes = useFakeTime ? fakeTime.minutes : now.getMinutes();
+    const currentTime = hours * 60 + minutes; // Convert to minutes for comparison
+    
+    console.log(`  Current time: ${hours}:${minutes} (${currentTime} minutes)`);
+    
+    // Parse happy hour time range
+    const timeRange = parseTimeRange(deal.hours);
+    if (!timeRange) {
+      console.log(`  Could not parse time range: ${deal.hours}`);
+      return false;
+    }
+    
+    // Check if current time is within happy hour
+    const isActive = isTimeInRange(currentTime, timeRange);
+    console.log(`  Result: ${isActive ? "ACTIVE NOW" : "not active"}`);
+    return isActive;
+  }
+  
   // Function to render deals based on filters
   function renderDeals() {
     const selectedNeighborhood = neighborhoodFilter.value;
@@ -355,8 +624,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const filteredDeals = happyHourDeals.filter(deal => {
       const neighborhoodMatch = selectedNeighborhood === 'all' || deal.neighborhood === selectedNeighborhood;
       const dayMatch = selectedDay === 'all' || deal.days.includes(selectedDay);
+      const activeMatch = !showActiveHappyHoursOnly || isHappyHourActive(deal);
       
-      return neighborhoodMatch && dayMatch;
+      return neighborhoodMatch && dayMatch && activeMatch;
     });
     
     // Render map markers
@@ -364,6 +634,24 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Render list view
     renderListView(filteredDeals);
+    
+    // Update UI to show filter state
+    updateActiveHappyHourButtonState();
+  }
+  
+  // Function to update the active happy hour button state
+  function updateActiveHappyHourButtonState() {
+    const navButton = document.getElementById('active-now-nav-btn');
+    
+    // Get count of active happy hours for display
+    let activeCount = 0;
+    happyHourDeals.forEach(deal => {
+      if (isHappyHourActive(deal)) activeCount++;
+    });
+    
+    if (navButton) {
+      navButton.classList.toggle('active', showActiveHappyHoursOnly);
+    }
   }
   
   // Stats panel functionality removed
@@ -434,6 +722,8 @@ document.addEventListener('DOMContentLoaded', () => {
               className: 'custom-popup'
             });
           
+          // Store deal data with the marker for easy access in cluster functions
+          marker.options.dealData = deal;
           markers.addLayer(marker);
         } catch (e) {
           console.error(`Error creating marker for deal ${deal.id} (${deal.name}):`, e);
@@ -443,21 +733,39 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
       
-    // If we have deals, fit bounds to see all markers
+    // Check if we need to adjust the view based on markers
     if (deals.length > 0 && map) {
       try {
-        const markerLayers = markers.getLayers();
-        if (markerLayers && markerLayers.length > 0) {
-          const bounds = L.featureGroup(markerLayers).getBounds();
-          map.fitBounds(bounds, { padding: [50, 50] });
-        } else {
-          // Fallback to default view if no markers
-          map.setView([40.7500, -73.9700], 11);
+        // Store current zoom level before any changes
+        const currentZoom = map.getZoom();
+        
+        // Important: If we're toggling active happy hours, don't change the zoom
+        if (showActiveHappyHoursOnly) {
+          // Don't change the zoom level at all when showing active happy hours
+          console.log("Keeping current zoom level for active happy hours view");
+        } 
+        else {
+          // For initial load or regular filter changes - ensure a reasonable view
+          console.log("Setting initial map view - zoom level 10");
+          // Always set a reasonable default zoom for initial load
+          map.setView([40.7500, -73.9700], 10);
+          
+          // If there are a lot of markers (> 20), consider showing them all
+          const markerLayers = markers.getLayers();
+          if (markerLayers && markerLayers.length > 20) {
+            console.log(`Showing fit bounds for ${markerLayers.length} markers`);
+            const bounds = L.featureGroup(markerLayers).getBounds();
+            // Use a maxZoom option to prevent excessive zooming
+            map.fitBounds(bounds, { 
+              padding: [50, 50],
+              maxZoom: 12  // Never zoom in more than level 12
+            });
+          }
         }
       } catch (e) {
-        console.error('Error fitting bounds:', e);
-        // Fallback to default view
-        map.setView([40.7500, -73.9700], 11);
+        console.error('Error handling map view:', e);
+        // Safe fallback view
+        map.setView([40.7500, -73.9700], 10);
       }
     }
   }
@@ -567,6 +875,14 @@ document.addEventListener('DOMContentLoaded', () => {
   function setupMapEventHandlers() {
     if (!map) return;
     
+    // Add zoom change handler to refresh clusters with progressive disclosure
+    map.on('zoomend', function() {
+      // Force marker clusters to update their icons
+      if (markers) {
+        markers.refreshClusters();
+      }
+    });
+    
     // Handle popup link clicks
     map.on('popupopen', function(e) {
       const popupLink = e.popup._contentNode.querySelector('.popup-link');
@@ -632,9 +948,179 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
+  /* Helper functions for progressive disclosure clusters */
+  function getClusterNeighborhoods(cluster) {
+    const markers = cluster.getAllChildMarkers();
+    return markers.map(marker => {
+      const data = marker.options.dealData;
+      return data && data.neighborhood ? 
+        formatNeighborhoodName(data.neighborhood) : 'Unknown';
+    });
+  }
+  
+  function formatNeighborhoodName(neighborhood) {
+    // Convert snake_case to Title Case
+    if (!neighborhood) return 'Unknown';
+    return neighborhood
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+  
+  function getMostCommon(array) {
+    if (!array || array.length === 0) return 'Unknown';
+    
+    const counts = {};
+    let maxCount = 0;
+    let maxItem = array[0];
+    
+    for (const item of array) {
+      counts[item] = (counts[item] || 0) + 1;
+      if (counts[item] > maxCount) {
+        maxCount = counts[item];
+        maxItem = item;
+      }
+    }
+    
+    return maxItem;
+  }
+  
+  function getActiveHappyHours(cluster) {
+    const markers = cluster.getAllChildMarkers();
+    const now = new Date();
+    const day = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][now.getDay()];
+    
+    // Get current time in 24-hour format (e.g., 14:30)
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const currentTime = hours * 60 + minutes; // Convert to minutes for easier comparison
+    
+    let activeCount = 0;
+    
+    markers.forEach(marker => {
+      const deal = marker.options.dealData;
+      if (deal && deal.days && deal.days.includes(day) && deal.hours) {
+        // Parse happy hour time range
+        const timeRange = parseTimeRange(deal.hours);
+        if (timeRange && isTimeInRange(currentTime, timeRange)) {
+          activeCount++;
+        }
+      }
+    });
+    
+    return activeCount;
+  }
+  
+  function parseTimeRange(timeString) {
+    if (!timeString) return null;
+    
+    console.log("Parsing time range:", timeString);
+    
+    // Handle formats like "4pm-7pm", "4PM - 7PM", "4:00 PM - 7:00 PM"
+    const regex = /(\d+)(?::(\d+))?\s*(am|pm|AM|PM)?\s*[-–—]\s*(\d+)(?::(\d+))?\s*(am|pm|AM|PM)?/;
+    const match = timeString.match(regex);
+    
+    if (!match) {
+      console.log("  No match found for regex pattern");
+      return null;
+    }
+    
+    console.log("  Match found:", match);
+    
+    let startHour = parseInt(match[1], 10);
+    const startMinute = match[2] ? parseInt(match[2], 10) : 0;
+    let startPeriod = match[3] ? match[3].toLowerCase() : 'pm'; // Default to PM if not specified
+    
+    let endHour = parseInt(match[4], 10);
+    const endMinute = match[5] ? parseInt(match[5], 10) : 0;
+    let endPeriod = match[6] ? match[6].toLowerCase() : 'pm'; // Default to PM if not specified
+    
+    // Convert to 24-hour format
+    if (startPeriod === 'pm' && startHour < 12) startHour += 12;
+    if (startPeriod === 'am' && startHour === 12) startHour = 0;
+    if (endPeriod === 'pm' && endHour < 12) endHour += 12;
+    if (endPeriod === 'am' && endHour === 12) endHour = 0;
+    
+    // Convert to minutes since midnight for easier comparison
+    const startTime = startHour * 60 + startMinute;
+    const endTime = endHour * 60 + endMinute;
+    
+    console.log(`  Parsed result: ${startHour}:${startMinute} (${startTime} mins) - ${endHour}:${endMinute} (${endTime} mins)`);
+    
+    return { startTime, endTime };
+  }
+  
+  function isTimeInRange(currentTime, timeRange) {
+    if (!timeRange) return false;
+    
+    const { startTime, endTime } = timeRange;
+    
+    // Log comparison for debugging
+    console.log(`  Checking if ${currentTime} is in range ${startTime}-${endTime}`);
+    
+    // Handle ranges that cross midnight
+    let result;
+    if (endTime < startTime) {
+      result = currentTime >= startTime || currentTime <= endTime;
+      console.log(`  Crosses midnight: ${result ? "IN RANGE" : "not in range"}`);
+    } else {
+      result = currentTime >= startTime && currentTime <= endTime;
+      console.log(`  Standard range: ${result ? "IN RANGE" : "not in range"}`);
+    }
+    
+    return result;
+  }
+  
+  // Debug function to display active happy hours count in console
+  function countActiveHappyHours() {
+    let count = 0;
+    let activeDeals = [];
+    
+    // Check if happyHourDeals exists
+    if (!happyHourDeals || !Array.isArray(happyHourDeals)) {
+      console.error("ERROR: happyHourDeals is not available or not an array");
+      console.log("happyHourDeals type:", typeof happyHourDeals);
+      console.log("happyHourDeals:", happyHourDeals);
+      return [];
+    }
+    
+    // Log the first few deals for debugging structure
+    console.log("Sample of deals:", happyHourDeals.slice(0, 3));
+    
+    happyHourDeals.forEach(deal => {
+      if (isHappyHourActive(deal)) {
+        count++;
+        activeDeals.push({
+          name: deal.name,
+          neighborhood: deal.neighborhood,
+          hours: deal.hours,
+          days: deal.days
+        });
+        console.log(`Active: ${deal.name}, ${deal.neighborhood}, ${deal.hours}`);
+      }
+    });
+    
+    // Display summary info
+    if (useFakeTime) {
+      console.log(`TESTING MODE: Using fake time - ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][fakeTime.day]} at ${fakeTime.hours}:${fakeTime.minutes < 10 ? '0' + fakeTime.minutes : fakeTime.minutes}`);
+    } else {
+      console.log("Using real current time");
+    }
+    
+    console.log(`Total active happy hours: ${count} / ${happyHourDeals.length}`);
+    
+    // If no active happy hours found, suggest changing fake time
+    if (count === 0 && useFakeTime) {
+      console.log("No active happy hours found with current fake time. Try adjusting the fakeTime settings.");
+    }
+    
+    return activeDeals;
+  }
+  
   // Add CSS for custom marker and mobile optimizations
   const style = document.createElement('style');
   style.innerHTML = `
+    /* Individual marker styles */
     .custom-map-marker {
       background: transparent;
       border: none;
@@ -682,6 +1168,115 @@ document.addEventListener('DOMContentLoaded', () => {
       box-shadow: 0 0 0 5px rgba(10, 132, 255, 0.4), 0 0 15px rgba(10, 132, 255, 0.6);
       background: #ffffff;
     }
+    
+    /* Custom marker cluster styles */
+    .custom-cluster-icon {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    .marker-cluster-inner {
+      background-color: rgba(10, 132, 255, 0.8);
+      border-radius: 50%;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.2), 0 4px 15px rgba(0, 0, 0, 0.3);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+      color: white;
+      font-weight: 600;
+      transition: all 0.2s ease-out;
+      padding: 2px;
+      text-align: center;
+    }
+    .marker-cluster-inner span {
+      font-size: 14px;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+    
+    /* Cluster size styling */
+    .custom-cluster-icon.marker-cluster-small .marker-cluster-inner {
+      background-color: rgba(10, 132, 255, 0.75);
+    }
+    .custom-cluster-icon.marker-cluster-medium .marker-cluster-inner {
+      background-color: rgba(10, 132, 255, 0.85);
+      box-shadow: 0 0 0 5px rgba(10, 132, 255, 0.25), 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    .custom-cluster-icon.marker-cluster-large .marker-cluster-inner {
+      background-color: rgba(10, 132, 255, 0.95);
+      box-shadow: 0 0 0 6px rgba(10, 132, 255, 0.3), 0 8px 25px rgba(0, 0, 0, 0.5);
+    }
+    
+    /* Progressive disclosure styles */
+    /* Minimal styling (city level) */
+    .custom-cluster-icon.cluster-minimal .marker-cluster-inner {
+      width: 40px;
+      height: 40px;
+    }
+    
+    /* Neighborhood styling (district level) */
+    .custom-cluster-icon.cluster-neighborhood .marker-cluster-inner {
+      width: 50px;
+      height: 50px;
+    }
+    .cluster-neighborhood .cluster-neighborhood {
+      font-size: 8px;
+      line-height: 1.1;
+      margin-top: -2px;
+      opacity: 0.9;
+      font-weight: 500;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    /* Active happy hours styling */
+    .custom-cluster-icon.cluster-active .marker-cluster-inner {
+      background-color: rgba(48, 209, 88, 0.85);
+      box-shadow: 0 0 0 4px rgba(48, 209, 88, 0.25), 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    .active-now {
+      font-size: 8px;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 2px 5px;
+      border-radius: 8px;
+      margin-top: -2px;
+      color: rgba(255, 255, 255, 0.95);
+      font-weight: 500;
+    }
+    
+    /* Detailed styling (neighborhood level) */
+    .custom-cluster-icon.cluster-detailed .marker-cluster-inner {
+      width: 44px;
+      height: 44px;
+    }
+    
+    /* Hover effects for clusters */
+    .custom-cluster-icon:hover .marker-cluster-inner {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 6px rgba(10, 132, 255, 0.3), 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+    
+    /* Hover effects for active clusters */
+    .custom-cluster-icon.cluster-active:hover .marker-cluster-inner {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 6px rgba(48, 209, 88, 0.3), 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+    
+    /* Hide default cluster styles */
+    .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
+      background-color: transparent !important;
+    }
+    .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
+      background-color: transparent !important;
+    }
+    
+    /* Other UI animations */
     .filters-changed .deals-container {
       opacity: 0.8;
       transition: opacity 0.3s;
@@ -760,6 +1355,15 @@ document.addEventListener('DOMContentLoaded', () => {
         transform: translate(-50%, -50%) scale(1.1);
         box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
         transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+      }
+      
+      .custom-cluster-icon:hover .marker-cluster-inner {
+        transform: none;
+      }
+      
+      .custom-cluster-icon:active .marker-cluster-inner {
+        transform: scale(0.95);
+        transition: transform 0.1s ease-out;
       }
       
       .deal-card:hover {

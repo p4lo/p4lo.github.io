@@ -3590,3 +3590,6 @@ const happyHourDealsOriginal = [
 
 // Apply the image paths to all venues
 const happyHourDeals = addImagesToDeals(happyHourDealsOriginal, restaurantImageMapping);
+
+// Log the total number of happy hour deals for debugging
+console.log("Total happy hour deals loaded:", happyHourDeals.length);
