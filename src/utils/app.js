@@ -1,5 +1,32 @@
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
+  // First, ensure correct view is shown on mobile
+  // Check URL hash or default to home
+  const hash = window.location.hash.substring(1) || 'home';
+  const viewToActivate = document.getElementById(`${hash}-view`) ? hash : 'home';
+  
+  // Ensure only the correct view is shown
+  document.querySelectorAll('.view-container').forEach(view => {
+    view.classList.remove('active');
+  });
+  document.getElementById(`${viewToActivate}-view`).classList.add('active');
+  
+  // Update nav links
+  document.querySelectorAll('nav a').forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('data-view') === viewToActivate) {
+      link.classList.add('active');
+    }
+  });
+  
+  // Set body class
+  document.body.classList.remove('home-active', 'map-active');
+  if (viewToActivate === 'home') {
+    document.body.classList.add('home-active');
+  } else if (viewToActivate === 'map') {
+    document.body.classList.add('map-active');
+  }
+  
   // Initialize home page components
   initHomepage();
   
@@ -39,25 +66,27 @@ document.addEventListener('DOMContentLoaded', () => {
         mapContainer.style.display = 'block';
       }
       
-      // Initialize map with modern styling - simplified for mobile
+      // Initialize map with simplified options for better performance
       map = L.map('map', {
-        zoomControl: true, // Use default zoom controls for better mobile touch support
-        minZoom: 10,  // Don't let users zoom out too far
-        maxZoom: 18,  // Limit maximum zoom to maintain performance
-        maxBoundsViscosity: 1.0,  // Keep map within NYC area bounds
-        attributionControl: true,
-        fadeAnimation: true
+        zoomControl: true,
+        minZoom: 10,
+        maxZoom: 18,
+        attributionControl: false, // Hide attribution for better performance
+        fadeAnimation: false, // Disable animations for better performance
+        zoomAnimation: false, // Disable animations for better performance
+        markerZoomAnimation: false, // Disable animations for better performance
+        preferCanvas: true // Use canvas renderer for better performance
       }).setView([40.7500, -73.9700], 11);
       
       // Save map instance to DOM for external script access
       document.querySelector('#map').__leaflet_instance__ = map;
       
-      // Add dark-themed map tiles to match the site's dark theme
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      // Add light-themed map tiles for faster loading
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '',
         subdomains: 'abcd',
         maxZoom: 19,
-        detectRetina: true  // Support high-DPI displays like iPhone
+        detectRetina: false  // Disable high-DPI support for better performance
       }).addTo(map);
       
       // Initialize markers layer group
@@ -76,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loadingEl) {
           loadingEl.style.display = 'none';
         }
-      }, 100);
+      }, 500);
       
       console.log("Map initialized successfully");
       return map;
@@ -86,19 +115,93 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   
-  // Initialize map on first load if starting on map view
-  if (document.querySelector('#map-view.active')) {
-    map = initMap();
+  // Initialize map immediately to have it ready
+  // Even if not visible, it will be ready to show instantly when needed
+  function initializeMapImmediately() {
+    console.log("Initializing map immediately for instant access");
+    
+    try {
+      // Use optimized initialization
+      const mapEl = document.getElementById('map');
+      if (!mapEl) return;
+      
+      // Already initialized, don't do it again
+      if (mapEl.__leaflet_instance__) {
+        map = mapEl.__leaflet_instance__;
+        return;
+      }
+      
+      // Make sure dimensions are set
+      mapEl.style.height = 'calc(100vh - 70px)';
+      mapEl.style.width = '100%';
+      
+      // Create map with most performance-focused options
+      const mymap = L.map('map', {
+        zoomControl: true,
+        fadeAnimation: false,
+        zoomAnimation: false,
+        markerZoomAnimation: false,
+        preferCanvas: true,
+        renderer: L.canvas()
+      }).setView([40.7500, -73.9700], 12);
+      
+      // Add dark-themed map tiles
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '',
+        subdomains: 'abcd',
+        maxZoom: 18,
+        crossOrigin: false,
+        updateWhenIdle: true,
+        updateWhenZooming: false
+      }).addTo(mymap);
+      
+      // Store map reference globally
+      map = mymap;
+      mapEl.__leaflet_instance__ = mymap;
+      markers = L.layerGroup().addTo(map);
+      
+      // Create markers right away but keep map hidden until needed
+      if (!document.querySelector('#map-view.active')) {
+        mapEl.style.display = 'none';
+      } else {
+        // If map view is active, show it
+        mapEl.style.display = 'block';
+        setTimeout(() => map.invalidateSize(), 0);
+      }
+      
+      // Set up event handlers
+      setupMapEventHandlers();
+      
+      // Pre-render markers
+      renderDeals();
+    } catch (error) {
+      console.error("Error initializing map:", error);
+    }
   }
   
+  // Initialize map immediately after page load
+  initializeMapImmediately();
+  
   // Custom marker icon styled for dark theme maps
-  const customIcon = L.divIcon({
-    className: 'custom-map-marker',
-    html: '<div class="marker-inner"><div class="marker-pulse"></div></div>',
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
-    popupAnchor: [0, -12] // Position popup slightly above marker
-  });
+  let customIcon;
+  
+  // Create custom marker icon function to ensure it's created when needed
+  function createCustomIcon() {
+    // Create icon only once and cache it
+    if (!customIcon) {
+      customIcon = L.divIcon({
+        className: 'custom-map-marker',
+        html: '<div class="marker-inner"><div class="marker-pulse"></div></div>',
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12] // Position popup slightly above marker
+      });
+    }
+    return customIcon;
+  }
+  
+  // Initialize the icon immediately
+  createCustomIcon();
 
   // Markers group is now defined at the top as a global
   
@@ -127,49 +230,92 @@ document.addEventListener('DOMContentLoaded', () => {
       // View-specific logic
       if (view === 'home') {
         document.body.classList.add('home-active');
+        
+        // Ensure map is truly hidden on homepage
+        const mapContainer = document.getElementById('map');
+        if (mapContainer) {
+          mapContainer.style.height = '0';
+          mapContainer.style.width = '0';
+          mapContainer.style.display = 'none';
+        }
+        
+        // Ensure map view is hidden
+        const mapView = document.getElementById('map-view');
+        if (mapView) {
+          mapView.style.visibility = 'hidden';
+          mapView.style.opacity = '0';
+          mapView.style.position = 'absolute';
+          mapView.style.left = '-9999px';
+        }
+        
       } else if (view === 'map') {
         console.log("Switching to map view...");
         document.body.classList.add('map-active');
         
-        // First ensure the map container has proper dimensions before initializing
-        const mapContainer = document.getElementById('map');
-        mapContainer.style.height = '100%';
-        mapContainer.style.width = '100%'; 
+        // Make sure map view is visible first
+        const mapView = document.getElementById('map-view');
+        if (mapView) {
+          mapView.style.visibility = 'visible';
+          mapView.style.opacity = '1';
+          mapView.style.position = 'relative';
+          mapView.style.left = '0';
+          mapView.style.display = 'block';
+        }
         
-        // Wait a tick for the DOM to update
-        setTimeout(() => {
-          // Initialize map if not done yet
-          if (!map) {
-            console.log("Initializing map for map view...");
-            map = initMap();
-          }
+        // Force main container to have proper dimensions
+        const mapContainer = document.getElementById('map');
+        if (mapContainer) {
+          // Force dimensions and make visible
+          mapContainer.style.height = 'calc(100vh - 70px)';
+          mapContainer.style.width = '100%';
+          mapContainer.style.display = 'block';
+          mapContainer.style.visibility = 'visible';
+          mapContainer.style.opacity = '1';
           
-          // Important: wrap map usage in a try/catch to handle potential errors
+          // Since map is already initialized, just need to make it visible and refresh
+          if (map) {
+            // Let the browser render the container first
+            setTimeout(() => {
+              map.invalidateSize();
+              // Make sure markers are showing
+              renderDeals();
+            }, 10);
+          }
+        }
+      } else if (view === 'list') {
+        console.log("Switching to list view...");
+        
+        // Make sure list view is visible and styled correctly
+        const listView = document.getElementById('list-view');
+        if (listView) {
+          listView.style.visibility = 'visible';
+          listView.style.opacity = '1';
+          listView.style.position = 'relative';
+          listView.style.display = 'block';
+          listView.style.left = '0';
+        }
+        
+        // Force re-render the deals for the list view
+        renderDeals();
+        
+        // Map should already be initialized - just make sure it's visible and refreshed
+        if (map) {
+          console.log("Map already initialized, refreshing...");
           setTimeout(() => {
-            try {
-              if (map) {
-                console.log("Resizing map...");
-                map.invalidateSize();
-                
-                // Re-render deals to show markers
-                console.log("Re-rendering deals for map view...");
-                renderDeals();
-              } else {
-                console.error("Map not available, initialization may have failed");
-                // Try one more time
-                console.log("Attempting to initialize map again...");
-                map = initMap();
-                if (map) {
-                  console.log("Map initialized on second attempt");
-                  map.invalidateSize();
-                  renderDeals();
-                }
-              }
-            } catch (error) {
-              console.error("Error updating map:", error);
+            map.invalidateSize();
+            renderDeals();
+          }, 10);
+        } else {
+          // In case map wasn't initialized yet
+          console.log("Map not initialized yet, initializing now...");
+          initializeMapImmediately();
+          setTimeout(() => {
+            if (map) {
+              map.invalidateSize();
+              renderDeals();
             }
-          }, 300); // Increased timeout for better reliability
-        }, 100);
+          }, 50);
+        }
       }
     });
   });
@@ -232,18 +378,15 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Function to render map markers with Apple-style
   function renderMapMarkers(deals) {
-    // Only attempt to render if the map view is active, otherwise wait
-    if (!document.querySelector('#map-view.active')) {
-      console.log("Map view is not active, skipping marker rendering");
-      return;
-    }
+    // Always render markers regardless of active view 
+    // This allows markers to be ready when switching views
     
     // Make sure map is initialized
     if (!map) {
-      console.log("Map not initialized yet, initializing now...");
-      map = initMap();
+      console.log("Map not initialized yet, initializing...");
+      initializeMapImmediately();
       
-      // If map initialization failed, don't proceed
+      // If still no map, can't render markers
       if (!map) {
         console.error("Failed to initialize map, cannot render markers");
         return;
@@ -260,37 +403,57 @@ document.addEventListener('DOMContentLoaded', () => {
     // Clear existing markers
     markers.clearLayers();
     
-    deals.forEach(deal => {
-      const marker = L.marker(deal.location, { icon: customIcon })
-        .bindPopup(`
-          <div class="popup-content">
-            ${deal.imagePath ? `<div class="popup-image-container">
-              <img src="${getImageUrl(deal.imagePath)}" alt="${deal.name}" class="popup-image">
-            </div>` : ''}
-            <h3>${deal.name}</h3>
-            <div class="popup-info">
-              <p>${deal.address}</p>
-              <p><strong>${deal.hours}</strong></p>
-              <p>${deal.deals}</p>
-              <div class="popup-actions">
-                ${deal.website ? `<a href="${deal.website}" target="_blank" class="website-link">Visit Website</a>` : ''}
-                <a href="#" class="popup-link" data-id="${deal.id}">View Details</a>
-              </div>
-            </div>
-          </div>
-        `, {
-          maxWidth: 300,
-          className: 'custom-popup'
-        });
-      
-      markers.addLayer(marker);
-    });
+    // Create custom icon if not already created
+    if (!customIcon) {
+      customIcon = createCustomIcon();
+    }
     
+    deals.forEach(deal => {
+      // Verify location exists and is valid
+      if (deal.location && Array.isArray(deal.location) && deal.location.length === 2) {
+        try {
+          const marker = L.marker(deal.location, { icon: customIcon })
+            .bindPopup(`
+              <div class="popup-content">
+                ${deal.imagePath ? `<div class="popup-image-container">
+                  <img src="${getImageUrl(deal.imagePath)}" alt="${deal.name}" class="popup-image">
+                </div>` : ''}
+                <h3>${deal.name}</h3>
+                <div class="popup-info">
+                  <p>${deal.address}</p>
+                  <p><strong>${deal.hours}</strong></p>
+                  <p>${deal.deals}</p>
+                  <div class="popup-actions">
+                    ${deal.website ? `<a href="${deal.website}" target="_blank" class="website-link">Visit Website</a>` : ''}
+                    <a href="#" class="popup-link" data-id="${deal.id}">View Details</a>
+                  </div>
+                </div>
+              </div>
+            `, {
+              maxWidth: 300,
+              className: 'custom-popup'
+            });
+          
+          markers.addLayer(marker);
+        } catch (e) {
+          console.error(`Error creating marker for deal ${deal.id} (${deal.name}):`, e);
+        }
+      } else {
+        console.warn(`Invalid location for deal ${deal.id} (${deal.name}):`, deal.location);
+      }
+    });
+      
     // If we have deals, fit bounds to see all markers
     if (deals.length > 0 && map) {
       try {
-        const bounds = L.featureGroup(markers.getLayers()).getBounds();
-        map.fitBounds(bounds, { padding: [50, 50] });
+        const markerLayers = markers.getLayers();
+        if (markerLayers && markerLayers.length > 0) {
+          const bounds = L.featureGroup(markerLayers).getBounds();
+          map.fitBounds(bounds, { padding: [50, 50] });
+        } else {
+          // Fallback to default view if no markers
+          map.setView([40.7500, -73.9700], 11);
+        }
       } catch (e) {
         console.error('Error fitting bounds:', e);
         // Fallback to default view
@@ -812,6 +975,25 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Set up category and neighborhood clicks
   function setupHomepageInteractions() {
+    // Explore Map button in hero section
+    const exploreButton = document.querySelector('.hero-content .explore-button');
+    if (exploreButton) {
+      exploreButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log("Explore Map button clicked");
+        
+        // Reset filters to show all
+        document.getElementById('neighborhood').value = 'all';
+        document.getElementById('day').value = 'all';
+        
+        // Switch to map view using the nav link click handler
+        const mapNavLink = document.querySelector('nav a[data-view="map"]');
+        if (mapNavLink) {
+          mapNavLink.click();
+        }
+      });
+    }
+    
     // Category cards
     document.querySelectorAll('.category-card').forEach(card => {
       card.addEventListener('click', (e) => {

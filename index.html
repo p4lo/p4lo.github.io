@@ -5,30 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>Buzz on a Budget | NYC's Best Happy Hour Deals</title>
+  <title>Cocktail Compass | NYC's Best Happy Hour Deals</title>
   <link rel="stylesheet" href="src/styles/main.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <meta name="theme-color" content="#ffffff">
   <!-- System fonts don't need preloading -->
-  <meta name="description" content="Discover the best happy hour deals across New York City with Buzz on a Budget. Search by neighborhood, day, and view exclusive offers.">
+  <meta name="description" content="Discover the best happy hour deals across New York City with Cocktail Compass. Search by neighborhood, day, and view exclusive offers.">
 </head>
 <body>
   <header id="main-header" class="collapsed">
     <div class="nav-pill-container">
-      <h1>Buzz on a Budget</h1>
-      
-      <div class="menu-toggle" aria-label="Toggle filters menu">
-        <span></span>
-        <span></span>
-        <span></span>
+      <div class="app-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="app-icon">
+          <!-- Martini Glass Icon -->
+          <path d="M8 21h8m-4-7v7M4 4h16l-8 10z"></path>
+        </svg>
       </div>
       
       <nav>
         <ul class="nav-pill">
-          <li><a href="#" class="active" data-view="home">Home</a></li>
-          <li><a href="#" data-view="map">Map</a></li>
-          <li><a href="#" data-view="list">List</a></li>
+          <li><a href="#" class="active" data-view="home" aria-label="Home">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+          </a></li>
+          <li><a href="#" data-view="map" aria-label="Map">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+          </a></li>
+          <li><a href="#" data-view="list" aria-label="List">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+          </a></li>
         </ul>
       </nav>
     </div>
@@ -91,8 +96,8 @@
   <!-- Welcome overlay for initial load animation -->
   <div id="welcome-overlay">
     <div class="welcome-content">
-      <div class="welcome-logo">B</div>
-      <h1>Buzz on a Budget</h1>
+      <div class="welcome-logo">C</div>
+      <h1>Cocktail Compass</h1>
       <p>NYC's Best Happy Hour Deals</p>
     </div>
   </div>
@@ -114,7 +119,7 @@
         <div class="hero-content">
           <h2>Find Your Perfect <span class="highlight">Happy Hour</span></h2>
           <p class="subtitle">Explore NYC's best drink deals, curated for every budget.</p>
-          <button class="explore-button" data-view="map">Explore Map</button>
+          <button class="explore-button" data-view="map" aria-label="Explore Map View">Explore Map</button>
         </div>
       </div>
       
@@ -169,28 +174,28 @@
         <div class="neighborhood-slider">
           <a href="#" class="neighborhood-item" data-neighborhood="east_village">
             <div class="neighborhood-image">
-              <img src="images/image13.jpg" alt="East Village" loading="lazy">
+              <img src="src/restaurant_images/image13.jpg" alt="East Village" loading="lazy">
             </div>
             <h4>East Village</h4>
             <p>32 Happy Hours</p>
           </a>
           <a href="#" class="neighborhood-item" data-neighborhood="west_village">
             <div class="neighborhood-image">
-              <img src="images/image1.jpg" alt="West Village" loading="lazy">
+              <img src="src/restaurant_images/image1.jpg" alt="West Village" loading="lazy">
             </div>
             <h4>West Village</h4>
             <p>27 Happy Hours</p>
           </a>
           <a href="#" class="neighborhood-item" data-neighborhood="williamsburg">
             <div class="neighborhood-image">
-              <img src="images/image60.jpg" alt="Williamsburg" loading="lazy">
+              <img src="src/restaurant_images/image60.jpg" alt="Williamsburg" loading="lazy">
             </div>
             <h4>Williamsburg</h4>
             <p>19 Happy Hours</p>
           </a>
           <a href="#" class="neighborhood-item" data-neighborhood="lower_east_side">
             <div class="neighborhood-image">
-              <img src="images/image24.jpg" alt="Lower East Side" loading="lazy">
+              <img src="src/restaurant_images/image24.jpg" alt="Lower East Side" loading="lazy">
             </div>
             <h4>Lower East Side</h4>
             <p>23 Happy Hours</p>
@@ -201,47 +206,14 @@
 
     <section id="map-view" class="view-container">
       <div id="map">
-        <!-- Map container, will be populated by Leaflet -->
-        <div id="map-loading" style="padding: 20px; text-align: center; background-color: #f5f5f7; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-          <div style="margin-bottom: 20px;">Loading map...</div>
-          <button onclick="debugMap()" style="padding: 10px 20px; background-color: #0071e3; color: white; border: none; border-radius: 20px; cursor: pointer;">Debug Map</button>
+        <!-- Map container, will be populated by Leaflet only when map view is active -->
+        <div id="map-loading" style="padding: 20px; text-align: center; background-color: #1c1c1e; height: 100%; display: none; align-items: center; justify-content: center; flex-direction: column;">
+          <div style="margin-bottom: 20px; color: white;">Loading map...</div>
         </div>
       </div>
     </section>
     
-    <script>
-      // Helper function to debug map issues
-      function debugMap() {
-        console.log("=== Map Debug Information ===");
-        const mapEl = document.getElementById('map');
-        console.log("Map element exists:", !!mapEl);
-        console.log("Map dimensions:", mapEl.clientWidth + "×" + mapEl.clientHeight);
-        console.log("Map is visible:", mapEl.offsetParent !== null);
-        console.log("Map view active:", document.querySelector('#map-view.active') !== null);
-        
-        const mapInstance = mapEl.__leaflet_instance__;
-        console.log("Map instance exists:", !!mapInstance);
-        
-        if (!mapInstance) {
-          console.log("Attempting to initialize map...");
-          document.querySelector('nav a[data-view="map"]').click();
-          setTimeout(() => {
-            console.log("After click, map instance exists:", !!mapEl.__leaflet_instance__);
-          }, 500);
-        } else {
-          console.log("Map center:", mapInstance.getCenter());
-          console.log("Map zoom:", mapInstance.getZoom());
-          mapInstance.invalidateSize();
-          console.log("Map size invalidated");
-        }
-        
-        // Remove the loading message after debugging
-        const loadingEl = document.getElementById('map-loading');
-        if (loadingEl) {
-          loadingEl.style.display = 'none';
-        }
-      }
-    </script>
+    <!-- Debug scripts removed -->
 
     <section id="list-view" class="view-container">
       <div class="deals-container" id="deals-list">
@@ -251,6 +223,23 @@
   </main>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Preload map tiles for faster loading
+    document.addEventListener('DOMContentLoaded', function() {
+      // Create hidden image elements to preload tile images
+      const tileUrls = [
+        'https://a.basemaps.cartocdn.com/dark_all/12/1207/1540.png',
+        'https://b.basemaps.cartocdn.com/dark_all/12/1206/1540.png',
+        'https://c.basemaps.cartocdn.com/dark_all/12/1205/1540.png',
+        'https://d.basemaps.cartocdn.com/dark_all/12/1204/1540.png'
+      ];
+      
+      tileUrls.forEach(url => {
+        const img = new Image();
+        img.src = url;
+      });
+    });
+  </script>
   <script src="src/utils/data.js"></script>
   <script src="src/utils/app.js"></script>
   
@@ -321,10 +310,44 @@
           }, 300);
         } else {
           console.log("No map instance found, initializing new map...");
-          // If map view is active, initialize a new map
+          
+          // If map view is active, create a basic map directly
           if (document.querySelector('#map-view.active')) {
-            // Simulate click on map nav item to force reinitialization
-            document.querySelector('nav a[data-view="map"]').click();
+            // Show loading indicator
+            const loadingEl = document.getElementById('map-loading');
+            if (loadingEl) {
+              loadingEl.style.display = 'flex';
+            }
+            
+            // Create a basic map directly with simplified options
+            const mymap = L.map('map', {
+              zoomControl: true,
+              fadeAnimation: false,
+              zoomAnimation: false,
+              markerZoomAnimation: false,
+              preferCanvas: true
+            }).setView([40.7500, -73.9700], 12);
+            
+            // Add the tile layer (using light style for performance)
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+              subdomains: 'abcd',
+              maxZoom: 18
+            }).addTo(mymap);
+            
+            // Store the map on the DOM element
+            mapElement.__leaflet_instance__ = mymap;
+            
+            // Hide loading indicator after a short delay
+            setTimeout(() => {
+              const loadingEl = document.getElementById('map-loading');
+              if (loadingEl) {
+                loadingEl.style.display = 'none';
+              }
+            }, 500);
+            
+            // Force refresh deals to add markers
+            const event = new Event('change');
+            document.getElementById('neighborhood').dispatchEvent(event);
           }
         }
       } catch (e) {
@@ -383,6 +406,12 @@
         console.log("Switched to map view");
       }
       
+      // Show loading indicator immediately
+      const loadingEl = document.getElementById('map-loading');
+      if (loadingEl) {
+        loadingEl.style.display = 'flex';
+      }
+      
       // Try to access app.js functions through global scope
       setTimeout(() => {
         try {
@@ -393,34 +422,55 @@
             mapEl.__leaflet_instance__.invalidateSize();
             const event = new Event('change');
             document.getElementById('neighborhood').dispatchEvent(event);
+            
+            // Hide loading indicator
+            if (loadingEl) {
+              loadingEl.style.display = 'none';
+            }
           } else {
             console.log("No map instance found, creating new one...");
             
-            // Create a basic map directly
-            const mymap = L.map('map').setView([40.7500, -73.9700], 12);
+            // Create a basic map directly with performance optimizations
+            const mymap = L.map('map', {
+              zoomControl: true,
+              fadeAnimation: false,
+              zoomAnimation: false,
+              markerZoomAnimation: false,
+              preferCanvas: true,
+              renderer: L.canvas()
+            }).setView([40.7500, -73.9700], 12);
             
-            // Add the tile layer (using light style)
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            // Add the tile layer (using dark style)
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+              attribution: '',
               subdomains: 'abcd',
-              maxZoom: 19
+              maxZoom: 18
             }).addTo(mymap);
             
             // Store the map on the DOM element
             mapEl.__leaflet_instance__ = mymap;
             
-            // Hide loading indicator
-            const loadingEl = document.getElementById('map-loading');
-            if (loadingEl) {
-              loadingEl.style.display = 'none';
-            }
+            // Hide loading indicator with a delay
+            setTimeout(() => {
+              if (loadingEl) {
+                loadingEl.style.display = 'none';
+              }
+              
+              // Force refresh deals to add markers
+              const event = new Event('change');
+              document.getElementById('neighborhood').dispatchEvent(event);
+            }, 500);
             
             console.log("Map created manually");
           }
         } catch (e) {
           console.error("Error in manual map initialization:", e);
+          // Hide loading indicator on error
+          if (loadingEl) {
+            loadingEl.style.display = 'none';
+          }
         }
-      }, 300);
+      }, 400);
     }
     
     // Install prompt feature removed
